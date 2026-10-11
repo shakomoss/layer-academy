@@ -1,0 +1,20 @@
+---
+interface Props {
+  as?: 'div' | 'span';
+}
+const { as: Tag = 'div' } = Astro.props;
+---
+<Tag class="wordmark-mark">LAYER ACADEMY</Tag>
+
+<style>
+  .wordmark-mark {
+    display: inline-block;
+    font-family: var(--font-latin);
+    font-weight: 400;
+    font-size: 1.1rem;
+    letter-spacing: 0.3em;
+    padding-bottom: 0.6em;
+    border-bottom: 1px solid var(--color-ink);
+    white-space: nowrap;
+  }
+</style>

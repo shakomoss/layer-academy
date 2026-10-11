@@ -1,0 +1,181 @@
+:root {
+  --color-bg: #f7f5f0;
+  --color-ink: #1c1b19;
+  --color-grid: #eae7df;
+  --color-muted: #55514a;
+  --color-divider: #cfcac0;
+
+  --font-latin: 'Jost', sans-serif;
+  --font-georgian: 'Noto Sans Georgian', sans-serif;
+
+  --grid-size: 120px;
+  --container-max: 1120px;
+  --space-1: 0.5rem;
+  --space-2: 1rem;
+  --space-3: 1.5rem;
+  --space-4: 2.5rem;
+  --space-5: 4rem;
+  --space-6: 6rem;
+
+  --radius: 0;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--color-bg);
+  color-scheme: light;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-georgian);
+  color: var(--color-ink);
+  background: var(--color-bg);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.latin,
+.software-name,
+.wordmark {
+  font-family: var(--font-latin);
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-weight: 500;
+  line-height: 1.25;
+  margin: 0;
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  color: inherit;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+button {
+  font-family: inherit;
+}
+
+.container {
+  width: 100%;
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding-inline: var(--space-3);
+}
+
+.grid-bg {
+  background-image: linear-gradient(to right, var(--color-grid) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--color-grid) 1px, transparent 1px);
+  background-size: var(--grid-size) var(--grid-size);
+}
+
+.rule {
+  border: none;
+  border-top: 1px solid var(--color-divider);
+  margin: 0;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  min-height: 44px;
+  padding: 0.85rem 1.75rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  border: 1px solid var(--color-ink);
+  background: transparent;
+  color: var(--color-ink);
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.btn-primary {
+  background: var(--color-ink);
+  color: var(--color-bg);
+}
+
+.btn-primary:hover,
+.btn-primary:focus-visible {
+  background: #343128;
+}
+
+.btn-secondary:hover,
+.btn-secondary:focus-visible {
+  background: var(--color-ink);
+  color: var(--color-bg);
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--color-ink);
+  outline-offset: 2px;
+}
+
+.price-box {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  border: 1px solid var(--color-ink);
+  padding: var(--space-3) var(--space-4);
+}
+
+.price-box .price-old {
+  text-decoration: line-through;
+  color: var(--color-muted);
+  font-size: 0.95rem;
+}
+
+.price-box .price-current {
+  font-family: var(--font-latin);
+  font-size: 2rem;
+  font-weight: 400;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  background: var(--color-ink);
+  color: var(--color-bg);
+  padding: var(--space-1) var(--space-2);
+  z-index: 100;
+}
+
+.skip-link:focus {
+  left: var(--space-2);
+  top: var(--space-2);
+}

@@ -1,0 +1,189 @@
+---
+import { getCollection } from 'astro:content';
+import Wordmark from './Wordmark.astro';
+
+const [settings] = await getCollection('settings');
+const announcementText = settings?.data.announcementText ?? '';
+
+const navItems = [
+  { href: '/group-courses/', label: 'ჯგუფური კურსები' },
+  { href: '/mentorship/', label: 'ინდივიდუალური მენტორინგი' },
+];
+
+const currentPath = new URL(Astro.request.url).pathname;
+function isActive(href: string) {
+  return currentPath === href || currentPath.startsWith(href);
+}
+---
+{announcementText && (
+  <div class="announcement">
+    <p class="container">{announcementText}</p>
+  </div>
+)}
+
+<header class="site-header">
+  <div class="container header-inner">
+    <a href="/" class="wordmark-link" aria-label="Layer Academy — მთავარი">
+      <Wordmark />
+    </a>
+
+    <button
+      id="nav-toggle"
+      class="nav-toggle"
+      type="button"
+      aria-expanded="false"
+      aria-controls="site-nav"
+    >
+      <span class="visually-hidden">მენიუს გახსნა</span>
+      <span class="nav-toggle-bars" aria-hidden="true"></span>
+    </button>
+
+    <nav id="site-nav" class="site-nav" aria-label="მთავარი ნავიგაცია">
+      <ul>
+        {navItems.map((item) => (
+          <li>
+            <a href={item.href} aria-current={isActive(item.href) ? 'page' : undefined}>
+              {item.label}
+            </a>
+          </li>
+        ))}
+        <li>
+          <a href="/contact/" class="btn btn-primary nav-cta">კონტაქტი</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+  <hr class="rule" />
+</header>
+
+<style>
+  .announcement {
+    background: var(--color-ink);
+    color: var(--color-bg);
+  }
+  .announcement p {
+    padding-block: 0.5rem;
+    font-size: 0.85rem;
+    text-align: center;
+  }
+
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--color-bg);
+  }
+
+  .header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-block: var(--space-2);
+  }
+
+  .wordmark-link {
+    text-decoration: none;
+    color: var(--color-ink);
+  }
+
+  .nav-toggle {
+    display: none;
+    width: 44px;
+    height: 44px;
+    border: none;
+    background: transparent;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .nav-toggle-bars,
+  .nav-toggle-bars::before,
+  .nav-toggle-bars::after {
+    display: block;
+    width: 22px;
+    height: 1px;
+    background: var(--color-ink);
+  }
+  .nav-toggle-bars::before {
+    content: '';
+    margin-bottom: 6px;
+  }
+  .nav-toggle-bars::after {
+    content: '';
+    margin-top: 6px;
+  }
+
+  .site-nav ul {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .site-nav a {
+    text-decoration: none;
+    font-size: 0.95rem;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .site-nav a[aria-current='page'] {
+    border-bottom: 1px solid var(--color-ink);
+  }
+
+  .nav-cta {
+    padding: 0.6rem 1.25rem;
+  }
+
+  @media (max-width: 760px) {
+    .nav-toggle {
+      display: flex;
+    }
+
+    .site-nav {
+      display: none;
+      position: absolute;
+      inset-inline: 0;
+      top: 100%;
+      background: var(--color-bg);
+      border-top: 1px solid var(--color-divider);
+    }
+
+    .site-nav.is-open {
+      display: block;
+    }
+
+    .site-nav ul {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0;
+      padding: var(--space-2) var(--space-3);
+    }
+
+    .site-nav li {
+      border-bottom: 1px solid var(--color-grid);
+    }
+
+    .site-nav li:last-child {
+      border-bottom: none;
+      padding-top: var(--space-2);
+    }
+
+    .nav-cta {
+      display: inline-flex;
+      justify-content: center;
+    }
+  }
+</style>
+
+<script>
+  const toggle = document.getElementById('nav-toggle');
+  const nav = document.getElementById('site-nav');
+  toggle?.addEventListener('click', () => {
+    const isOpen = nav?.classList.toggle('is-open');
+    toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  });
+</script>

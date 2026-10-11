@@ -1,0 +1,100 @@
+---
+import { getCollection } from 'astro:content';
+import Wordmark from './Wordmark.astro';
+
+const [settings] = await getCollection('settings');
+const data = settings?.data;
+const year = new Date().getFullYear();
+
+const contactLinks = [
+  data?.contactPhone ? { href: `tel:${data.contactPhone.replace(/\s+/g, '')}`, label: data.contactPhone, kind: 'phone' } : null,
+  data?.contactEmail ? { href: `mailto:${data.contactEmail}`, label: data.contactEmail, kind: 'email' } : null,
+  data?.whatsappUrl ? { href: data.whatsappUrl, label: 'WhatsApp', kind: 'whatsapp' } : null,
+  data?.messengerUrl ? { href: data.messengerUrl, label: 'Messenger', kind: 'messenger' } : null,
+  data?.instagramUrl ? { href: data.instagramUrl, label: 'Instagram', kind: 'instagram' } : null,
+  data?.facebookUrl ? { href: data.facebookUrl, label: 'Facebook', kind: 'facebook' } : null,
+].filter(Boolean) as { href: string; label: string; kind: string }[];
+---
+<footer class="site-footer">
+  <hr class="rule" />
+  <div class="container footer-inner">
+    <div class="footer-brand">
+      <Wordmark />
+      <p class="footer-tagline">არქიტექტურული პროგრამების ონლაინ კურსები და მენტორინგი</p>
+    </div>
+
+    <nav class="footer-nav" aria-label="ქვედა ნავიგაცია">
+      <ul>
+        <li><a href="/group-courses/">ჯგუფური კურსები</a></li>
+        <li><a href="/mentorship/">ინდივიდუალური მენტორინგი</a></li>
+        <li><a href="/contact/">კონტაქტი</a></li>
+        <li><a href="/privacy/">კონფიდენციალურობის პოლიტიკა</a></li>
+        <li><a href="/terms/">წესები და პირობები</a></li>
+      </ul>
+    </nav>
+
+    {contactLinks.length > 0 && (
+      <ul class="footer-contacts">
+        {contactLinks.map((link) => (
+          <li>
+            <a href={link.href} data-meta-contact={link.kind}>{link.label}</a>
+          </li>
+        ))}
+      </ul>
+    )}
+  </div>
+  <div class="container footer-bottom">
+    <p>© {year} Layer Academy. ყველა უფლება დაცულია.</p>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    margin-top: var(--space-6);
+  }
+
+  .footer-inner {
+    display: grid;
+    gap: var(--space-4);
+    padding-block: var(--space-5);
+  }
+
+  @media (min-width: 760px) {
+    .footer-inner {
+      grid-template-columns: 1.2fr 1fr 1fr;
+    }
+  }
+
+  .footer-tagline {
+    margin-top: var(--space-2);
+    color: var(--color-muted);
+    font-size: 0.9rem;
+    max-width: 28ch;
+  }
+
+  .footer-nav ul,
+  .footer-contacts {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  .footer-nav a,
+  .footer-contacts a {
+    text-decoration: none;
+    color: var(--color-ink);
+    font-size: 0.9rem;
+    display: inline-flex;
+    min-height: 32px;
+    align-items: center;
+  }
+
+  .footer-bottom {
+    padding-block: var(--space-2) var(--space-4);
+    color: var(--color-muted);
+    font-size: 0.8rem;
+  }
+</style>
