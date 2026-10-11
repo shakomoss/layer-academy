@@ -1,0 +1,243 @@
+content:
+  - name: courses
+    label: "კურსები"
+    type: collection
+    path: src/content/courses
+    format: yaml-frontmatter
+    view:
+      primary: title
+      sort: order
+      order: asc
+      fields: [title, level, order, published]
+    fields:
+      - name: title
+        label: "სახელი"
+        description: "პროგრამის სახელი, მაგ: Archicad"
+        type: string
+        required: true
+
+      - name: slug
+        label: "ბილიკი (slug)"
+        description: "გამოიყენება გვერდის ბმულში. არ შეცვალოთ გამოქვეყნების შემდეგ — შეცვლა გატეხავს არსებულ ბმულებს."
+        type: string
+        required: true
+
+      - name: published
+        label: "გამოქვეყნებულია"
+        description: "გამორთვის შემთხვევაში კურსი არ გამოჩნდება საიტზე."
+        type: boolean
+        default: true
+
+      - name: order
+        label: "რიგითობა"
+        description: "რიგითობა სიებში (0 — პირველი)."
+        type: number
+        default: 0
+
+      - name: level
+        label: "დონე"
+        description: "მაგ: დამწყები."
+        type: string
+        default: "დამწყები"
+
+      - name: group
+        label: "ჯგუფური კურსი"
+        type: object
+        fields:
+          - name: enabled
+            label: "ჯგუფური კურსი აქტიურია"
+            description: "თუ გამორთავთ, კურსი არ გამოჩნდება ჯგუფურ კურსებში."
+            type: boolean
+            default: true
+
+          - name: price
+            label: "ფასი (₾)"
+            description: "ჯგუფური კურსის სრული ფასი ლარში."
+            type: number
+            required: true
+
+          - name: earlyBirdPrice
+            label: "ფასდაკლებული ფასი (₾)"
+            description: "არასავალდებულო. შეავსეთ მხოლოდ იმ შემთხვევაში, თუ ამჟამად მოქმედებს ფასდაკლება."
+            type: number
+
+          - name: earlyBirdUntil
+            label: "ფასდაკლება მოქმედებს თარიღამდე"
+            description: "ფასდაკლებული ფასი საიტზე გამოჩენას შეწყვეტს ამ თარიღის შემდეგ ავტომატურად."
+            type: date
+            options:
+              format: "yyyy-MM-dd"
+
+          - name: nextStartDate
+            label: "შემდეგი ჯგუფის დაწყების თარიღი"
+            description: "არასავალდებულო. თუ შეავსებთ და თარიღი მომავალშია, საიტზე გამოჩნდება ზუსტი თარიღი 'მომავალი თვის ნაკადის' ნაცვლად. თარიღის გასვლის შემდეგ საიტი ავტომატურად დაბრუნდება ზოგად წესზე."
+            type: date
+            options:
+              format: "yyyy-MM-dd"
+
+          - name: schedule
+            label: "განრიგი"
+            description: "მაგ: შაბათ-კვირა, 12:00. დაცარიელების შემთხვევაში საიტზე გამოჩნდება ზოგადი ტექსტი 'განრიგი მალე დაზუსტდება'."
+            type: string
+
+          - name: duration
+            label: "ხანგრძლივობა"
+            description: "მაგ: 8 გაკვეთილი, თითოეული 60–80 წუთი. არასავალდებულო — დაცარიელების შემთხვევაში არ გამოჩნდება."
+            type: string
+
+          - name: seatsLeft
+            label: "დარჩენილი ადგილები"
+            description: "შეავსეთ მხოლოდ იმ შემთხვევაში, თუ ნამდვილად შეზღუდულია ადგილები. დაცარიელების შემთხვევაში ეს ხაზი საერთოდ არ გამოჩნდება."
+            type: number
+
+      - name: mentorship
+        label: "ინდივიდუალური მენტორინგი"
+        type: object
+        fields:
+          - name: enabled
+            label: "მენტორინგი აქტიურია"
+            description: "თუ გამორთავთ, პროგრამა არ გამოჩნდება მენტორინგის გვერდზე."
+            type: boolean
+            default: true
+
+          - name: monthlyPrice
+            label: "ფასი თვეში (₾)"
+            type: number
+            required: true
+
+      - name: instructor
+        label: "ინსტრუქტორი / მენტორი"
+        description: "აირჩიეთ ინსტრუქტორი სიიდან."
+        type: reference
+        options:
+          collection: instructors
+          search: "name"
+          value: "{path}"
+          label: "{primary}"
+
+      - name: goal
+        label: "კურსის მიზანი"
+        description: "არასავალდებულო. ერთი ან ორი წინადადება."
+        type: text
+
+      - name: outcome
+        label: "კურსის შედეგი"
+        description: "არასავალდებულო. რას მიიღებს სტუდენტი კურსის ბოლოს."
+        type: text
+
+      - name: syllabus
+        label: "სილაბუსი"
+        description: "შეავსეთ ან 'გაკვეთილები' (თითო გაკვეთილს ექნება თემების სია), ან 'თემები' (ერთი ზოგადი სია). ორივეს შევსება არ არის საჭირო."
+        type: object
+        fields:
+          - name: lessons
+            label: "გაკვეთილები"
+            description: "გაკვეთილებად დაყოფილი სილაბუსისთვის (მაგ: Archicad)."
+            type: object
+            list:
+              collapsible:
+                collapsed: true
+                summary: "{title}"
+            fields:
+              - name: title
+                label: "გაკვეთილის სათაური"
+                type: string
+                required: true
+              - name: topics
+                label: "თემები ამ გაკვეთილში"
+                type: string
+                list: true
+
+          - name: topics
+            label: "თემები (ზოგადი სია)"
+            description: "მარტივი სიისთვის, გაკვეთილებად დაუყოფლად (მაგ: AutoCAD, Revit, Rhino)."
+            type: string
+            list: true
+
+      - name: seoTitle
+        label: "SEO სათაური"
+        description: "არასავალდებულო. თუ ცარიელია, ავტომატურად გენერირდება სახელიდან."
+        type: string
+
+      - name: seoDescription
+        label: "SEO აღწერა"
+        description: "არასავალდებულო. გამოჩენის აღწერა საძიებო სისტემებში."
+        type: text
+
+  - name: instructors
+    label: "ინსტრუქტორები"
+    type: collection
+    path: src/content/instructors
+    format: yaml-frontmatter
+    view:
+      primary: name
+    fields:
+      - name: name
+        label: "სახელი და გვარი"
+        type: string
+        required: true
+
+      - name: role
+        label: "როლი / წოდება"
+        description: "მაგ: ლექტორი და მენტორი (AutoCAD, Revit, Rhino)"
+        type: string
+        required: true
+
+      - name: bio
+        label: "ბიოგრაფია"
+        description: "არასავალდებულო. დაცარიელების შემთხვევაში საიტზე გამოჩნდება მხოლოდ სახელი, როლი და LinkedIn ბმული — ტექსტი არ გამოჩნდება."
+        type: text
+
+      - name: linkedin
+        label: "LinkedIn ბმული"
+        type: string
+        required: true
+
+  - name: settings
+    label: "ზოგადი პარამეტრები"
+    type: file
+    path: src/content/settings/settings.md
+    format: yaml-frontmatter
+    fields:
+      - name: contactPhone
+        label: "ტელეფონი"
+        description: "მაგ: +995 5XX XX XX XX. დაცარიელების შემთხვევაში არ გამოჩნდება საიტზე."
+        type: string
+
+      - name: contactEmail
+        label: "ელ-ფოსტა (საჯარო)"
+        description: "საკონტაქტო გვერდზე გამოსაჩენი ელ-ფოსტა."
+        type: string
+
+      - name: whatsappUrl
+        label: "WhatsApp ბმული"
+        description: "მაგ: https://wa.me/995XXXXXXXXX"
+        type: string
+
+      - name: messengerUrl
+        label: "Messenger ბმული"
+        type: string
+
+      - name: instagramUrl
+        label: "Instagram ბმული"
+        type: string
+
+      - name: facebookUrl
+        label: "Facebook ბმული"
+        type: string
+
+      - name: notificationEmail
+        label: "ელ-ფოსტა რეგისტრაციების მისაღებად"
+        description: "ყველა ახალი რეგისტრაცია გაიგზავნება ამ მისამართზე. აუცილებლად შეავსეთ რეალური ელ-ფოსტა."
+        type: string
+        required: true
+
+      - name: metaDomainVerification
+        label: "Meta დომენის დადასტურების კოდი"
+        description: "არასავალდებულო. Meta Business Suite-ში მოცემული კოდი, თუ დომენის დადასტურება გჭირდებათ."
+        type: string
+
+      - name: announcementText
+        label: "ზედა ზოლის შეტყობინება"
+        description: "არასავალდებულო. თუ შეავსებთ, გამოჩნდება თხელი ზოლი საიტის ყველა გვერდზე, თავში."
+        type: string
