@@ -1,0 +1,56 @@
+---
+import { getCollection, getEntry } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import CourseCard from '../../components/CourseCard.astro';
+
+const courses = (await getCollection('courses', ({ data }) => data.published && data.group.enabled)).sort(
+  (a, b) => a.data.order - b.data.order
+);
+---
+<BaseLayout
+  title="ჯგუფური კურსები — Archicad, AutoCAD, Revit, Rhino, 3ds Max | Layer Academy"
+  description="არქიტექტურული პროგრამების ჯგუფური, ლაივ ონლაინ კურსები დამწყებთათვის. ახალი ნაკადი ყოველ თვე."
+>
+  <section class="container page-intro">
+    <h1>ჯგუფური კურსები</h1>
+    <p>
+      ყველა კურსი ჩატარდება ონლაინ, ლაივ ლექციების ფორმატში და განკუთვნილია სრულიად დამწყებთათვის. ახალი
+      ნაკადი იხსნება ყოველ თვე.
+    </p>
+  </section>
+
+  <section class="container course-grid">
+    {courses.map((course) => (
+      <CourseCard course={course} variant="group" />
+    ))}
+  </section>
+</BaseLayout>
+
+<style>
+  .page-intro {
+    padding-top: var(--space-5);
+    max-width: 60ch;
+  }
+
+  .page-intro h1 {
+    margin-bottom: var(--space-2);
+  }
+
+  .course-grid {
+    padding-block: var(--space-4) var(--space-6);
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  @media (min-width: 640px) {
+    .course-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1000px) {
+    .course-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+</style>

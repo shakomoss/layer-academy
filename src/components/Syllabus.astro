@@ -1,0 +1,118 @@
+---
+interface Lesson {
+  title: string;
+  topics: string[];
+}
+
+interface Props {
+  syllabus?: {
+    lessons?: Lesson[];
+    topics?: string[];
+  };
+  introText?: string;
+}
+
+const { syllabus, introText } = Astro.props;
+const lessons = syllabus?.lessons ?? [];
+const topics = syllabus?.topics ?? [];
+const hasContent = lessons.length > 0 || topics.length > 0;
+---
+{!hasContent && <p class="syllabus-empty">სილაბუსი მალე დაემატება</p>}
+
+{lessons.length > 0 && (
+  <div class="syllabus-lessons">
+    {lessons.map((lesson, i) => (
+      <details class="lesson" open={i === 0}>
+        <summary>
+          <span class="lesson-number">{String(i + 1).padStart(2, '0')}</span>
+          <span class="lesson-title">{lesson.title}</span>
+        </summary>
+        <ul>
+          {lesson.topics.map((topic) => <li>{topic}</li>)}
+        </ul>
+      </details>
+    ))}
+  </div>
+)}
+
+{topics.length > 0 && (
+  <div class="syllabus-topics">
+    {introText && <p class="syllabus-intro">{introText}</p>}
+    <ul class="topics-grid">
+      {topics.map((topic) => <li>{topic}</li>)}
+    </ul>
+  </div>
+)}
+
+<style>
+  .syllabus-empty {
+    color: var(--color-muted);
+  }
+
+  .syllabus-lessons {
+    border-top: 1px solid var(--color-divider);
+  }
+
+  .lesson {
+    border-bottom: 1px solid var(--color-divider);
+  }
+
+  .lesson summary {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-2);
+    padding-block: var(--space-2);
+    cursor: pointer;
+    min-height: 44px;
+    font-weight: 500;
+    list-style: none;
+  }
+
+  .lesson summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .lesson-number {
+    font-family: var(--font-latin);
+    color: var(--color-muted);
+    font-size: 0.85rem;
+  }
+
+  .lesson ul {
+    margin: 0 0 var(--space-3);
+    padding-left: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .lesson li {
+    font-size: 0.95rem;
+  }
+
+  .syllabus-intro {
+    margin-bottom: var(--space-2);
+    color: var(--color-muted);
+  }
+
+  .topics-grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.6rem;
+  }
+
+  .topics-grid li {
+    padding-left: 1rem;
+    border-left: 1px solid var(--color-divider);
+    font-size: 0.95rem;
+  }
+
+  @media (min-width: 760px) {
+    .topics-grid {
+      grid-template-columns: 1fr 1fr;
+      column-gap: var(--space-4);
+    }
+  }
+</style>

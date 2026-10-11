@@ -1,0 +1,24 @@
+---
+import { getCohortLabel } from '../lib/cohort';
+
+interface Props {
+  nextStartDate?: Date;
+  as?: 'span' | 'p';
+}
+
+const { nextStartDate, as: Tag = 'span' } = Astro.props;
+const label = getCohortLabel({ nextStartDate });
+const isoDate = nextStartDate ? nextStartDate.toISOString() : '';
+---
+<Tag class="cohort-label" data-cohort-label data-next-start-date={isoDate}>{label}</Tag>
+
+<script>
+  import { getCohortLabel } from '../lib/cohort';
+
+  // The build-time label can go stale on a cached page; recompute once on load
+  // using the visitor's own clock (the utility re-derives Asia/Tbilisi internally).
+  document.querySelectorAll<HTMLElement>('[data-cohort-label]').forEach((el) => {
+    const nextStartDate = el.dataset.nextStartDate || undefined;
+    el.textContent = getCohortLabel({ nextStartDate });
+  });
+</script>

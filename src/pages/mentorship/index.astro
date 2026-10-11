@@ -1,0 +1,63 @@
+---
+import { getCollection, getEntry } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import CourseCard from '../../components/CourseCard.astro';
+
+const courses = (await getCollection('courses', ({ data }) => data.published && data.mentorship.enabled)).sort(
+  (a, b) => a.data.order - b.data.order
+);
+
+const coursesWithInstructor = await Promise.all(
+  courses.map(async (course) => ({
+    course,
+    instructor: await getEntry(course.data.instructor),
+  }))
+);
+---
+<BaseLayout
+  title="ინდივიდუალური მენტორინგი — არქიტექტურული პროგრამები | Layer Academy"
+  description="ყოველკვირეული 1:1 ონლაინ სესიები მენტორთან — Archicad, AutoCAD, Revit, Rhino, 3ds Max. გადახდა თვეში."
+>
+  <section class="container page-intro">
+    <h1>ინდივიდუალური მენტორინგი</h1>
+    <p>
+      ყოველკვირეული 1:1 ონლაინ სესიები მენტორთან — უკუკავშირი თქვენ ნამუშევარზე, კონსულტაცია და პასუხები
+      კითხვებზე. სწავლის დაწყება შესაძლებელია ნებისმიერ დროს, განრიგი შეთანხმდება მენტორთან ინდივიდუალურად.
+    </p>
+  </section>
+
+  <section class="container course-grid">
+    {coursesWithInstructor.map(({ course, instructor }) => (
+      <CourseCard course={course} variant="mentorship" instructorName={instructor?.data.name} />
+    ))}
+  </section>
+</BaseLayout>
+
+<style>
+  .page-intro {
+    padding-top: var(--space-5);
+    max-width: 60ch;
+  }
+
+  .page-intro h1 {
+    margin-bottom: var(--space-2);
+  }
+
+  .course-grid {
+    padding-block: var(--space-4) var(--space-6);
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  @media (min-width: 640px) {
+    .course-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1000px) {
+    .course-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+</style>

@@ -1,0 +1,89 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const [settings] = await getCollection('settings');
+const contactEmail = settings?.data.contactEmail || '';
+---
+<BaseLayout
+  title="კონფიდენციალურობის პოლიტიკა | Layer Academy"
+  description="რა მონაცემებს ვაგროვებთ რეგისტრაციისას, რისთვის ვიყენებთ და როგორ შეგიძლიათ მათი წაშლის მოთხოვნა."
+>
+  <article class="container legal-page">
+    <h1>კონფიდენციალურობის პოლიტიკა</h1>
+
+    <section>
+      <h2>რა მონაცემებს ვაგროვებთ</h2>
+      <p>
+        როდესაც რეგისტრირდებით კურსზე ან მენტორინგზე, ვაგროვებთ მხოლოდ იმ მონაცემებს, რომლებსაც თავად
+        მიუთითებთ რეგისტრაციის ფორმაში: სახელი და გვარი, ტელეფონის ნომერი, ელ-ფოსტა (არასავალდებულო) და
+        დამატებითი კომენტარი (არასავალდებულო).
+      </p>
+    </section>
+
+    <section>
+      <h2>რისთვის ვიყენებთ მონაცემებს</h2>
+      <p>
+        თქვენ მიერ მითითებულ მონაცემებს ვიყენებთ მხოლოდ იმისთვის, რომ დაგიკავშირდეთ რეგისტრაციასთან
+        დაკავშირებით, დავაზუსტოთ დეტალები და გამოგიწეროთ ინვოისი გადასახდელად.
+      </p>
+    </section>
+
+    <section>
+      <h2>Cookies და Meta Pixel</h2>
+      <p>
+        საიტი შესაძლოა იყენებდეს Meta Pixel-ს, რათა გავზომოთ რეკლამების ეფექტურობა. ეს ტექნოლოგია
+        აქტიურდება მხოლოდ მას შემდეგ, რაც თანხმობას გამოხატავთ საიტზე გამოჩენილ cookie-ების შეტყობინებაში.
+        თანხმობის გარეშე Meta Pixel არ ჩაირთვება, ხოლო თანხმობის გადასინჯვა შესაძლებელია ნებისმიერ დროს.
+      </p>
+    </section>
+
+    <section>
+      <h2>მონაცემების შენახვა</h2>
+      <p>
+        საიტს არ გააქვს საკუთარი მონაცემთა ბაზა — ვებსაიტი სრულად სტატიკურია. რეგისტრაციის ფორმიდან
+        მონაცემები იგზავნება მხოლოდ ელ-ფოსტაზე, რათა დავამუშავოთ თქვენი განაცხადი.
+      </p>
+    </section>
+
+    <section>
+      <h2>თქვენი უფლებები</h2>
+      <p>
+        შეგიძლიათ მოითხოვოთ თქვენი მონაცემების წაშლა ნებისმიერ დროს. ამისთვის დაგვიკავშირდეთ
+        {contactEmail ? <> მისამართზე <a href={`mailto:${contactEmail}`}>{contactEmail}</a>.</> : <> საკონტაქტო გვერდზე მითითებული ხერხით.</>}
+      </p>
+    </section>
+
+    <p class="legal-note">
+      ეს დოკუმენტი არის ზოგადი შაბლონი და რეკომენდირებულია მისი გადამოწმება კვალიფიციურ იურისტთან.
+    </p>
+  </article>
+</BaseLayout>
+
+<style>
+  .legal-page {
+    padding-block: var(--space-5) var(--space-6);
+    max-width: 65ch;
+  }
+
+  .legal-page h1 {
+    margin-bottom: var(--space-3);
+  }
+
+  .legal-page section {
+    margin-block: var(--space-4);
+  }
+
+  .legal-page h2 {
+    margin-bottom: var(--space-1);
+    font-size: 1.15rem;
+  }
+
+  .legal-note {
+    margin-top: var(--space-5);
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--color-divider);
+    color: var(--color-muted);
+    font-size: 0.85rem;
+  }
+</style>

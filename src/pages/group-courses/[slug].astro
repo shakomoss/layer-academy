@@ -1,0 +1,189 @@
+---
+import { getCollection, getEntry } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import KeyFacts from '../../components/KeyFacts.astro';
+import PriceBox from '../../components/PriceBox.astro';
+import Syllabus from '../../components/Syllabus.astro';
+import InstructorBio from '../../components/InstructorBio.astro';
+import FAQ from '../../components/FAQ.astro';
+import { buildFaqItems } from '../../lib/faq';
+
+export async function getStaticPaths() {
+  const courses = await getCollection('courses', ({ data }) => data.published && data.group.enabled);
+  return courses.map((course) => ({ params: { slug: course.data.slug }, props: { course } }));
+}
+
+const { course } = Astro.props;
+const { title, slug, group, goal, outcome, syllabus, mentorship, seoTitle, seoDescription } = course.data;
+const instructor = await getEntry(course.data.instructor);
+
+const pageTitle = seoTitle || `${title} კურსი — საბაზისო დონე | Layer Academy`;
+const pageDescription =
+  seoDescription || `${title}-ის ჯგუფური, ონლაინ კურსი დამწყებთათვის. ლაივ ლექციები, საბაზისო დონე.`;
+---
+<BaseLayout title={pageTitle} description={pageDescription}>
+  <article class="container course-page">
+    <header class="course-header">
+      <h1 class="latin software-name">{title}</h1>
+      <p class="course-subtitle">საფუძვლები დამწყებთათვის</p>
+    </header>
+
+    <KeyFacts nextStartDate={group.nextStartDate} schedule={group.schedule} duration={group.duration} />
+
+    <div class="course-price-row">
+      <PriceBox price={group.price} earlyBirdPrice={group.earlyBirdPrice} earlyBirdUntil={group.earlyBirdUntil} />
+      <a href={`/register/?course=${slug}&type=group`} class="btn btn-primary">დარეგისტრირდით</a>
+    </div>
+
+    {group.seatsLeft != null && <p class="seats-left">დარჩენილია {group.seatsLeft} ადგილი</p>}
+
+    {goal && (
+      <section class="course-section">
+        <h2>კურსის მიზანი</h2>
+        <p>{goal}</p>
+      </section>
+    )}
+
+    <section class="course-section">
+      <h2>რას შეისწავლით</h2>
+      <Syllabus syllabus={syllabus} introText={syllabus?.topics ? 'კურსის ფარგლებში შეისწავლით:' : undefined} />
+    </section>
+
+    {outcome && (
+      <section class="course-section">
+        <h2>კურსის შედეგი</h2>
+        <p>{outcome}</p>
+      </section>
+    )}
+
+    <section class="course-section">
+      <h2>ვისთვისაა კურსი</h2>
+      <p>კურსი განკუთვნილია სრულიად დამწყებთათვის — წინასწარი გამოცდილება არ გჭირდებათ.</p>
+    </section>
+
+    {instructor && (
+      <section class="course-section">
+        <h2>ინსტრუქტორი</h2>
+        <InstructorBio
+          name={instructor.data.name}
+          role={instructor.data.role}
+          bio={instructor.data.bio}
+          linkedin={instructor.data.linkedin}
+        />
+      </section>
+    )}
+
+    <section class="course-section payment-note">
+      <h2>გადახდა</h2>
+      <p>გადახდა ინვოისით (საბანკო გადარიცხვა). დარეგისტრირების შემდეგ დაგიკავშირდებით და გამოგიწერთ ინვოისს.</p>
+    </section>
+
+    <section class="course-section">
+      <h2>კითხვები და პასუხები</h2>
+      <FAQ items={buildFaqItems()} />
+    </section>
+
+    {mentorship.enabled && (
+      <section class="course-section cross-link">
+        <p>
+          გსურთ ინდივიდუალური ტემპი? <a href={`/mentorship/${slug}/`}>{title}-ის ინდივიდუალური მენტორინგი</a>
+        </p>
+      </section>
+    )}
+  </article>
+
+  <div class="mobile-sticky-bar">
+    <PriceBox price={group.price} earlyBirdPrice={group.earlyBirdPrice} earlyBirdUntil={group.earlyBirdUntil} />
+    <a href={`/register/?course=${slug}&type=group`} class="btn btn-primary">დარეგისტრირდით</a>
+  </div>
+</BaseLayout>
+
+<style>
+  .course-page {
+    padding-block: var(--space-5) var(--space-6);
+    max-width: 72ch;
+  }
+
+  .course-header {
+    margin-bottom: var(--space-3);
+  }
+
+  .software-name {
+    font-size: clamp(2.5rem, 6vw, 4rem);
+    font-weight: 300;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .course-subtitle {
+    color: var(--color-muted);
+    margin-top: var(--space-1);
+  }
+
+  .course-price-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3);
+    margin-block: var(--space-4);
+  }
+
+  .seats-left {
+    color: var(--color-muted);
+    font-size: 0.9rem;
+    margin-bottom: var(--space-3);
+  }
+
+  .course-section {
+    margin-block: var(--space-5);
+  }
+
+  .course-section h2 {
+    margin-bottom: var(--space-2);
+    font-size: 1.3rem;
+  }
+
+  .cross-link {
+    border-top: 1px solid var(--color-divider);
+    padding-top: var(--space-3);
+  }
+
+  .cross-link a {
+    text-decoration: underline;
+  }
+
+  .mobile-sticky-bar {
+    display: none;
+  }
+
+  @media (max-width: 760px) {
+    .mobile-sticky-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-2);
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 40;
+      background: var(--color-bg);
+      border-top: 1px solid var(--color-divider);
+      padding: var(--space-2) var(--space-3);
+    }
+
+    .mobile-sticky-bar :global(.price-box) {
+      border: none;
+      padding: 0;
+      gap: 0;
+    }
+
+    .mobile-sticky-bar :global(.price-current) {
+      font-size: 1.4rem;
+    }
+
+    .course-page {
+      padding-bottom: calc(var(--space-6) + 64px);
+    }
+  }
+</style>

@@ -1,18 +1,239 @@
 ---
+import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Wordmark from '../components/Wordmark.astro';
+import CourseCard from '../components/CourseCard.astro';
+import FAQ from '../components/FAQ.astro';
+import { buildFaqItems } from '../lib/faq';
+import { getCurrentPrice } from '../lib/cohort';
+
+const groupCourses = (await getCollection('courses', ({ data }) => data.published && data.group.enabled)).sort(
+  (a, b) => a.data.order - b.data.order
+);
+const mentorshipCourses = await getCollection('courses', ({ data }) => data.published && data.mentorship.enabled);
+const instructors = await getCollection('instructors');
+
+const fromGroupPrice = Math.min(
+  ...groupCourses.map((c) => getCurrentPrice({ price: c.data.group.price, earlyBirdPrice: c.data.group.earlyBirdPrice, earlyBirdUntil: c.data.group.earlyBirdUntil }).currentPrice)
+);
+const fromMentorshipPrice = Math.min(...mentorshipCourses.map((c) => c.data.mentorship.monthlyPrice));
 ---
 <BaseLayout
   title="Layer Academy — არქიტექტურული პროგრამების კურსები ონლაინ"
-  description="ისწავლეთ Archicad, AutoCAD, Revit, Rhino და 3ds Max ნულიდან — ჯგუფური კურსები და ინდივიდუალური მენტორინგი ონლაინ."
+  description="ისწავლეთ Archicad, AutoCAD, Revit, Rhino და 3ds Max ნულიდან — ჯგუფური კურსები და ინდივიდუალური მენტორინგი ონლაინ, დამწყებთათვის."
 >
   <section class="container hero">
-    <h1>ისწავლეთ არქიტექტურული პროგრამები ნულიდან</h1>
-    <p>გვერდი მშენებლობის პროცესშია — სრული კონტენტი მომდევნო ეტაპზე დაემატება.</p>
+    <Wordmark />
+    <h1>ისწავლეთ არქიტექტურული პროგრამები ნულიდან, ონლაინ</h1>
+    <div class="hero-actions">
+      <a href="/group-courses/" class="btn btn-primary">ჯგუფური კურსები</a>
+      <a href="/mentorship/" class="btn btn-secondary">ინდივიდუალური მენტორინგი</a>
+    </div>
+  </section>
+
+  <section class="container ways-to-learn">
+    <h2>ორი გზა სასწავლებლად</h2>
+    <div class="ways-grid">
+      <article class="way-card">
+        <h3>ჯგუფური კურსები</h3>
+        <p>
+          ლაივ ონლაინ ლექციები ჩატარდება ჯგუფში, ახალი ნაკადი იხსნება ყოველ თვე. შესაფერისია
+          სტრუქტურირებული, ეტაპობრივი სწავლის მოყვარულთათვის.
+        </p>
+        <p class="way-price">კურსები {fromGroupPrice} ₾-დან</p>
+        <a href="/group-courses/" class="btn btn-secondary">კურსების ნახვა</a>
+      </article>
+      <article class="way-card">
+        <h3>ინდივიდუალური მენტორინგი</h3>
+        <p>
+          ყოველკვირეული 1:1 ონლაინ სესია მენტორთან, თქვენი ტემპითა და მიზნების მიხედვით. დაწყება
+          შესაძლებელია ნებისმიერ დროს.
+        </p>
+        <p class="way-price">მენტორინგი {fromMentorshipPrice} ₾-დან / თვეში</p>
+        <a href="/mentorship/" class="btn btn-secondary">პროგრამების ნახვა</a>
+      </article>
+    </div>
+  </section>
+
+  <section class="container group-courses-preview">
+    <h2>ჯგუფური კურსები</h2>
+    <div class="course-grid">
+      {groupCourses.map((course) => (
+        <CourseCard course={course} variant="group" />
+      ))}
+    </div>
+  </section>
+
+  <section class="container how-it-works">
+    <h2>როგორ მუშაობს</h2>
+    <ol class="steps">
+      <li>
+        <span class="step-number">01</span>
+        <p>დარეგისტრირდით კურსზე ან მენტორინგზე მოსახერხებელი ფორმის საშუალებით.</p>
+      </li>
+      <li>
+        <span class="step-number">02</span>
+        <p>დაგიკავშირდებით და გამოგიწერთ ინვოისს გადასახდელად.</p>
+      </li>
+      <li>
+        <span class="step-number">03</span>
+        <p>სწავლას დაიწყებთ შეთანხმებულ დროზე.</p>
+      </li>
+    </ol>
+  </section>
+
+  <section class="container instructors">
+    <h2>ინსტრუქტორები</h2>
+    <div class="instructors-grid">
+      {instructors.map((instructor) => (
+        <div class="instructor-card">
+          <p class="instructor-name">{instructor.data.name}</p>
+          <p class="instructor-role">{instructor.data.role}</p>
+          {instructor.data.bio && <p class="instructor-text">{instructor.data.bio}</p>}
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="container faq">
+    <h2>კითხვები და პასუხები</h2>
+    <FAQ items={buildFaqItems()} />
+  </section>
+
+  <section class="container final-cta">
+    <h2>მზად ხართ დასაწყებად?</h2>
+    <p>აირჩიეთ ჯგუფური კურსი ან ინდივიდუალური მენტორინგი და დარეგისტრირდით დღესვე.</p>
+    <div class="hero-actions">
+      <a href="/group-courses/" class="btn btn-primary">ჯგუფური კურსები</a>
+      <a href="/mentorship/" class="btn btn-secondary">ინდივიდუალური მენტორინგი</a>
+    </div>
   </section>
 </BaseLayout>
 
 <style>
   .hero {
-    padding-block: var(--space-6);
+    padding-block: var(--space-6) var(--space-5);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  .hero h1 {
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    max-width: 24ch;
+  }
+
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    justify-content: center;
+  }
+
+  .ways-to-learn,
+  .group-courses-preview,
+  .how-it-works,
+  .instructors,
+  .faq,
+  .final-cta {
+    padding-block: var(--space-5);
+  }
+
+  .ways-to-learn h2,
+  .group-courses-preview h2,
+  .how-it-works h2,
+  .instructors h2,
+  .faq h2,
+  .final-cta h2 {
+    margin-bottom: var(--space-3);
+  }
+
+  .ways-grid,
+  .course-grid,
+  .instructors-grid {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  @media (min-width: 640px) {
+    .ways-grid,
+    .instructors-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .course-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1000px) {
+    .course-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .way-card,
+  .instructor-card {
+    border: 1px solid var(--color-divider);
+    padding: var(--space-3);
+  }
+
+  .way-card h3 {
+    margin-bottom: var(--space-2);
+  }
+
+  .way-price {
+    font-family: var(--font-latin);
+    margin-block: var(--space-2);
+  }
+
+  .steps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  @media (min-width: 760px) {
+    .steps {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .steps li {
+    border-top: 1px solid var(--color-divider);
+    padding-top: var(--space-2);
+  }
+
+  .step-number {
+    font-family: var(--font-latin);
+    color: var(--color-muted);
+    display: block;
+    margin-bottom: 0.4rem;
+  }
+
+  .instructor-name {
+    font-weight: 500;
+    font-size: 1.1rem;
+  }
+
+  .instructor-role {
+    color: var(--color-muted);
+    font-size: 0.9rem;
+    margin-top: 0.2rem;
+  }
+
+  .instructor-text {
+    margin-top: 0.5rem;
+  }
+
+  .final-cta {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-2);
   }
 </style>

@@ -1,0 +1,27 @@
+---
+import { formatEarlyBirdUntil, getCurrentPrice } from '../lib/cohort';
+
+interface Props {
+  price: number;
+  earlyBirdPrice?: number;
+  earlyBirdUntil?: Date | string;
+  suffix?: string;
+}
+
+const { price, earlyBirdPrice, earlyBirdUntil, suffix } = Astro.props;
+const { currentPrice, regularPrice, isEarlyBird } = getCurrentPrice({ price, earlyBirdPrice, earlyBirdUntil });
+---
+<div class="price-box">
+  {isEarlyBird && <span class="price-old">{regularPrice} ₾{suffix}</span>}
+  <span class="price-current">{currentPrice} ₾{suffix}</span>
+  {isEarlyBird && earlyBirdUntil && (
+    <span class="price-note">ფასდაკლება {formatEarlyBirdUntil(earlyBirdUntil)}-მდე</span>
+  )}
+</div>
+
+<style>
+  .price-note {
+    font-size: 0.8rem;
+    color: var(--color-muted);
+  }
+</style>

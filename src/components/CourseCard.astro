@@ -1,0 +1,63 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import CohortLabel from './CohortLabel.astro';
+import PriceBox from './PriceBox.astro';
+
+interface Props {
+  course: CollectionEntry<'courses'>;
+  variant: 'group' | 'mentorship';
+  instructorName?: string;
+}
+
+const { course, variant, instructorName } = Astro.props;
+const { title, slug, group, mentorship } = course.data;
+const href = variant === 'group' ? `/group-courses/${slug}/` : `/mentorship/${slug}/`;
+---
+<article class="course-card">
+  <h3 class="latin">{title}</h3>
+
+  {variant === 'group' ? (
+    <>
+      <CohortLabel nextStartDate={group.nextStartDate} as="p" />
+      <p class="course-schedule">{group.schedule || 'განრიგი მალე დაზუსტდება'}</p>
+      <PriceBox price={group.price} earlyBirdPrice={group.earlyBirdPrice} earlyBirdUntil={group.earlyBirdUntil} />
+    </>
+  ) : (
+    <>
+      {instructorName && <p class="course-mentor">{instructorName}</p>}
+      <PriceBox price={mentorship.monthlyPrice} suffix=" / თვეში" />
+    </>
+  )}
+
+  <a href={href} class="btn btn-secondary course-link">
+    {variant === 'group' ? 'კურსის ნახვა' : 'პროგრამის ნახვა'}
+  </a>
+</article>
+
+<style>
+  .course-card {
+    border: 1px solid var(--color-divider);
+    padding: var(--space-3);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .course-card h3 {
+    font-size: 1.4rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 300;
+  }
+
+  .course-schedule,
+  .course-mentor {
+    color: var(--color-muted);
+    font-size: 0.9rem;
+  }
+
+  .course-link {
+    margin-top: var(--space-2);
+    align-self: flex-start;
+  }
+</style>
