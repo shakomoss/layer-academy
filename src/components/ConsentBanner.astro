@@ -6,7 +6,16 @@ interface Props {
 
 const { pixelId, ga4Id } = Astro.props;
 ---
-<div id="consent-banner" class="consent-banner" role="dialog" aria-live="polite" aria-label="Cookie-ების თანხმობა" hidden>
+<div
+  id="consent-banner"
+  class="consent-banner"
+  role="dialog"
+  aria-live="polite"
+  aria-label="Cookie-ების თანხმობა"
+  data-pixel-id={pixelId}
+  data-ga4-id={ga4Id}
+  hidden
+>
   <div class="container consent-inner">
     <p>
       ეს საიტი იყენებს cookie-ებს რეკლამების ეფექტურობის გასაზომად. დეტალები შეგიძლიათ იხილოთ ჩვენს
@@ -19,11 +28,6 @@ const { pixelId, ga4Id } = Astro.props;
   </div>
 </div>
 
-<script define:vars={{ pixelId, ga4Id }}>
-  window.__LA_PIXEL_ID__ = pixelId;
-  window.__LA_GA4_ID__ = ga4Id;
-</script>
-
 <script>
   import { loadGa4, loadPixel } from '../lib/pixel';
   import { getConsentChoice, setConsentChoice, trackContact, trackPageView } from '../lib/tracking';
@@ -33,8 +37,8 @@ const { pixelId, ga4Id } = Astro.props;
   const declineButton = document.getElementById('consent-decline') as HTMLButtonElement;
 
   function activateTracking() {
-    const pixelId = window.__LA_PIXEL_ID__;
-    const ga4Id = window.__LA_GA4_ID__;
+    const pixelId = banner.dataset.pixelId;
+    const ga4Id = banner.dataset.ga4Id;
     if (pixelId) loadPixel(pixelId);
     if (ga4Id) loadGa4(ga4Id);
     trackPageView();

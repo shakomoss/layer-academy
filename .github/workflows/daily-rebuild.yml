@@ -1,0 +1,31 @@
+name: Daily rebuild
+
+# Keeps the site's date-dependent content fresh even with nobody editing
+# anything: the "next cohort" label rolls over to the new month, and an
+# early-bird price automatically reverts to the regular price once its
+# date passes. See src/lib/cohort.ts for that logic.
+#
+# Needs a repository secret named CLOUDFLARE_DEPLOY_HOOK_URL — see the
+# "Daily rebuild" section of README.md for how to create one.
+
+on:
+  schedule:
+    # 20:05 UTC = 00:05 in Asia/Tbilisi (UTC+4), just after local midnight.
+    - cron: '5 20 * * *'
+  workflow_dispatch: {}
+
+jobs:
+  trigger-rebuild:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Cloudflare Pages deploy hook
+        run: |
+          if [ -z "${{ secrets.CLOUDFLARE_DEPLOY_HOOK_URL }}" ]; then
+            echo "::error::CLOUDFLARE_DEPLOY_HOOK_URL secret is not set. See README.md."
+            exit 1
+          fi
+          status=$(curl -s -o /dev/null -w "%{http_code}" -X POST "${{ secrets.CLOUDFLARE_DEPLOY_HOOK_URL }}")
+          echo "Deploy hook responded with status $status"
+          if [ "$status" -ge 300 ]; then
+            exit 1
+          fi

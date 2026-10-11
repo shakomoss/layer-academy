@@ -7,13 +7,23 @@ interface Props {
 
 const { contentName, contentCategory, value } = Astro.props;
 ---
-<script define:vars={{ contentName, contentCategory, value }}>
-  window.__LA_VIEW_CONTENT__ = { contentName, contentCategory, value };
-</script>
+<span
+  id="view-content-data"
+  data-content-name={contentName}
+  data-content-category={contentCategory}
+  data-value={value}
+  hidden
+></span>
 
 <script>
   import { trackViewContent } from '../lib/tracking';
 
-  const params = window.__LA_VIEW_CONTENT__;
-  if (params) trackViewContent(params);
+  const el = document.getElementById('view-content-data') as HTMLElement | null;
+  if (el?.dataset.contentName) {
+    trackViewContent({
+      contentName: el.dataset.contentName,
+      contentCategory: el.dataset.contentCategory as 'group' | 'mentorship',
+      value: Number(el.dataset.value),
+    });
+  }
 </script>

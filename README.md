@@ -1,43 +1,213 @@
-# Astro Starter Kit: Minimal
+# Layer Academy website
+
+The website for Layer Academy, a Georgian academy teaching architecture software (Archicad, AutoCAD, Revit, Rhino, 3ds Max) online — group cohorts and 1:1 mentorship.
+
+This README is written for whoever owns and runs the site day-to-day, even without a programming background. It covers editing content, the two pieces of automatic logic the site has, setting up hosting and the admin panel, connecting a domain, Meta ads tracking, and what to do when something looks wrong.
+
+If you get stuck on anything below, the fix for almost everything is: **edit the content in Pages CMS, or ask a developer** — you should never need to edit code for routine updates.
+
+---
+
+## 1. How the site is built, in one paragraph
+
+The site is static HTML — there is no database and no server to maintain. [Astro](https://astro.build) turns content files (prices, schedules, bios, syllabi) into the actual pages once, at "build" time. Those files live in a GitHub repository and are edited through **Pages CMS**, a visual admin panel — every save there commits a change to GitHub, which automatically triggers **Cloudflare Pages** to rebuild and redeploy the site, usually within a minute or two. The only moving part that isn't pre-built HTML is the registration form, which is handled by one small Cloudflare Pages Function (`/api/register`) — still free, still nothing to maintain.
+
+---
+
+## 2. Editing content in Pages CMS
+
+1. Go to [pagescms.org](https://pagescms.org) and sign in with the GitHub account that has access to this repository (see section 6 for first-time setup).
+2. Select this repository. You'll see three sections in the sidebar: **კურსები** (courses), **ინსტრუქტორები** (instructors), **ზოგადი პარამეტრები** (settings).
+3. Click into any item, change the field you need, and click **Save**. Every field has a short Georgian explanation under its label.
+4. Saving triggers a rebuild automatically. The live site updates in roughly 1–2 minutes — refresh the page to see your change.
+
+### What you can edit without touching code
+
+- **Courses** (`კურსები`): price, early-bird price and its expiry date, next start date, schedule text, duration, seats left, instructor, goal/outcome text, syllabus (either lesson-by-lesson or a flat topic list — see below), SEO title/description, published on/off.
+- **Instructors** (`ინსტრუქტორები`): name, role, bio, LinkedIn link.
+- **Settings** (`ზოგადი პარამეტრები`): phone, email, WhatsApp/Messenger/Instagram/Facebook links, the email address that receives registrations, the Meta domain verification code, and an optional announcement bar.
+
+### Syllabus: two formats, pick one per course
+
+Each course has **either**:
+- **გაკვეთილები** (lessons) — a numbered list, each with its own title and a list of topics. This renders as an accordion (used for Archicad). Use this when the course naturally breaks into weekly lessons.
+- **თემები** (topics) — one flat list of topics, shown as a two-column list (used for AutoCAD, Revit, Rhino). Use this for everything else.
+
+You only need to fill in one of the two. Leave both empty and the page shows "სილაბუსი მალე დაემატება" (syllabus coming soon) instead of a placeholder.
+
+---
+
+## 3. The two pieces of automatic logic
+
+These need no manual updates — they're mentioned here so you understand why a price or date on the site might change on its own.
+
+### "Next cohort" label
+
+Every group course page shows when the next intake is. If you haven't set a specific **"შემდეგი ჯგუფის დაწყების თარიღი"** (next start date) for a course, the site automatically shows "intake for next month's cohort" and updates that wording itself when the calendar rolls over to a new month — you never have to touch it.
+
+If you **do** set a specific start date (like AutoCAD's 2026-10-26), the site shows that exact date instead, right up until the date passes — then it automatically falls back to the "next month" wording again. You can safely leave an old date in place; it just stops being shown once it's in the past.
+
+### Early-bird pricing
+
+If you set both an **early-bird price** and an **expiry date**, the course page shows the regular price struck through next to the early-bird price, with "discounted until [date]". The moment that date passes, the site automatically goes back to showing only the regular price — again, nothing to do manually. To end a discount early, just delete the early-bird price and date.
+
+Both of these are recalculated automatically every day (see "Daily rebuild" below) *and* once more in the visitor's own browser when they load the page, so the label is never stale even on a cached page.
+
+---
+
+## 4. First deploy — one-time setup
+
+If the site isn't live yet, here's the order of operations.
+
+### 4.1 Push the code to GitHub
 
 ```sh
-npm create astro@latest -- --template minimal
+git remote add origin https://github.com/<your-username>/layer-academy.git
+git push -u origin master
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+(Create an empty repository on GitHub first, named however you like — don't initialize it with a README, since this project already has one.)
 
-## 🚀 Project Structure
+### 4.2 Create the Cloudflare Pages project
 
-Inside of your Astro project, you'll see the following folders and files:
+1. [dash.cloudflare.com](https://dash.cloudflare.com) → **Workers & Pages** → **Create** → **Pages** → **Connect to Git** → pick the repository.
+2. Build settings:
+   - **Build command:** `npm run build`
+   - **Build output directory:** `dist`
+3. Before the first deploy, add the environment variables from section 5 below (**Settings → Environment variables**). At minimum, set `SITE_URL` to your real domain.
+4. Deploy. Cloudflare gives you a free `*.pages.dev` URL immediately; see section 7 to attach your own domain.
 
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
+### 4.3 Connect Pages CMS
+
+1. Go to [pagescms.org](https://pagescms.org) → **Add new project** → authorize the Pages CMS GitHub App for this repository.
+2. Pages CMS reads `.pages.yml` from the repo root automatically — nothing else to configure.
+3. Give access to anyone else who should be able to edit content by inviting their GitHub account to the repository (as a Collaborator) and to the Pages CMS project.
+
+### 4.4 Daily rebuild (GitHub Actions)
+
+The "next cohort" label and early-bird expiry (section 3) only update themselves on a rebuild. Since nobody necessarily edits the site every day, a scheduled GitHub Action rebuilds it automatically once every night.
+
+1. In Cloudflare Pages: your project → **Settings → Builds & deployments → Deploy hooks** → **Add deploy hook**. Name it anything (e.g. "Daily rebuild"), branch `master`. Copy the generated URL.
+2. In GitHub: this repository → **Settings → Secrets and variables → Actions → New repository secret**.
+   - Name: `CLOUDFLARE_DEPLOY_HOOK_URL`
+   - Value: the URL you copied.
+3. That's it — `.github/workflows/daily-rebuild.yml` is already in the repo and will start running on its schedule (just after midnight, Tbilisi time). You can also trigger it manually any time from the **Actions** tab → **Daily rebuild** → **Run workflow**.
+
+---
+
+## 5. Environment variables
+
+Set these in Cloudflare Pages: **your project → Settings → Environment variables** (set them for both *Production* and *Preview* if you want preview deployments to behave the same way). `.env.example` in the repo lists the same variables for local development.
+
+The site is designed to **work before any of these are set** — registrations just get logged instead of emailed, and the Pixel/CAPI/Turnstile pieces simply don't activate until configured. Add them whenever you're ready, in any order.
+
+| Variable | Required for | Where to get it |
+|---|---|---|
+| `SITE_URL` | Correct links everywhere (sitemap, canonical tags, share previews) | Your real domain, e.g. `https://layeracademy.ge` — no trailing slash |
+| `PUBLIC_TURNSTILE_SITE_KEY` + `TURNSTILE_SECRET_KEY` | Spam protection on the registration form | Cloudflare dashboard → **Turnstile** → Add site. The "site key" is public, the "secret key" is not — keep it private |
+| `RESEND_API_KEY` | Emailing registrations to you and confirmations to students | [resend.com](https://resend.com) → API Keys. See section 8 for free-tier limits and why Resend |
+| `PUBLIC_META_PIXEL_ID` + `META_CAPI_TOKEN` | Meta ads tracking (Pixel + Conversions API) | Meta Events Manager → your Pixel → Settings. See section 9 |
+| `META_TEST_EVENT_CODE` | *Temporary* — only while testing in Meta Events Manager's Test Events tab | Same screen as above; **remove this variable once you're done testing** |
+| `PUBLIC_GA4_ID` | Optional Google Analytics 4 | analytics.google.com → Admin → Data Streams |
+
+**Rate limiting note:** the registration endpoint has basic abuse protection built in even with no extra setup. For stronger protection, bind a free Cloudflare KV namespace named `RATE_LIMIT_KV` to the Pages project (**Settings → Functions → KV namespace bindings**) — no code changes needed, the Function picks it up automatically if present.
+
+---
+
+## 6. Connecting your domain
+
+1. Cloudflare Pages → your project → **Custom domains** → **Set up a custom domain**.
+2. Follow the prompts (if the domain's DNS is already on Cloudflare, this is a couple of clicks; otherwise you'll add a CNAME record at your registrar).
+3. Update `SITE_URL` in the environment variables (section 5) to match, and trigger a rebuild (any content save in Pages CMS does this, or run the GitHub Action manually).
+
+---
+
+## 7. Meta Pixel and Conversions API
+
+Ads tracking is **off by default** — the site works fully without it, and nothing related to Meta loads until a visitor accepts the cookie banner.
+
+### Setup
+
+1. Create a Pixel in [Meta Events Manager](https://www.facebook.com/events_manager2) if you don't have one.
+2. Copy the **Pixel ID** into `PUBLIC_META_PIXEL_ID`.
+3. In the Pixel's **Settings** tab, generate a **Conversions API access token** and put it in `META_CAPI_TOKEN`. This powers a *server-side* copy of the Lead event (sent from the registration Function, not the browser), which makes tracking more reliable against ad blockers — Meta automatically deduplicates it against the browser Pixel's own Lead event using a shared event ID, so leads aren't double-counted.
+4. If your domain isn't verified yet: Meta Business Settings → **Brand Safety → Domains** gives you a verification code — put it in the `metaDomainVerification` field in Pages CMS → Settings. It'll appear in the page `<head>` automatically.
+
+### Testing
+
+1. Meta Events Manager → your Pixel → **Test Events**. Copy the code shown there into `META_TEST_EVENT_CODE`, redeploy.
+2. Browse the site, submit a test registration. You should see `PageView`, `ViewContent` (on a course page), `Contact` (clicking a WhatsApp/phone link), and `Lead` (after registering) show up in Test Events in real time — each with a green "matched" server-side event too, confirming the Conversions API side is also working.
+3. **Remove `META_TEST_EVENT_CODE` once done** — leaving it set sends real traffic as test traffic, which Meta won't use for ad optimization.
+
+### Later: offline conversions
+
+Once a registered student actually pays and starts, you can upload that as an **offline conversion** in Events Manager (Business Settings → **Data Sources → Offline Event Sets**) — match by the phone/email they registered with. This closes the loop from "lead" to "paying student" for ad optimization, without any code changes; it's a manual CSV upload (or a spreadsheet export from wherever you track payments) whenever you want to do it.
+
+---
+
+## 8. Why Resend, and a note on the registration form's architecture
+
+The original plan was a simple third-party form-to-email service (Web3Forms or Formspree). During implementation it became clear the brief's own requirements for the registration endpoint — **recomputing the price server-side so the browser can never submit a tampered price**, verifying Turnstile, and sending a server-side Meta Conversions API event — need actual server-side logic that a bare form-relay service can't provide (they just forward whatever fields you send, with no way to run validation or business logic in between).
+
+So the registration form posts to a small Cloudflare Pages Function (`/api/register`, part of this repo, still $0 to run) instead, which does that validation and then sends email itself via **[Resend](https://resend.com)**, a transactional email API — the free tier covers 3,000 emails/month and 100/day (check [resend.com/pricing](https://resend.com/pricing) for current numbers), which is far more than a course-registration volume needs. This also meant Web3Forms/Formspree's own spam protection wasn't available, so the form has its own honeypot field plus Cloudflare Turnstile instead.
+
+Emails send from `onboarding@resend.dev` by default (Resend's shared testing domain, works with zero setup). To send from your own address instead, verify a domain in Resend and update the `fromEmail` constant in `functions/api/register.ts`.
+
+---
+
+## 9. What to do when something breaks
+
+**A content edit isn't showing up on the live site.**
+Check Cloudflare Pages → your project → **Deployments** tab. If the latest deployment failed (red ❌), click it to see the error — it's almost always a content field that doesn't match what's expected (e.g. a price field containing text instead of a number). Fix it in Pages CMS and save again. If it succeeded (green ✓) but you still don't see the change, hard-refresh your browser (Ctrl/Cmd+Shift+R) — you may be looking at a cached copy.
+
+**Registrations aren't arriving by email.**
+Confirm `RESEND_API_KEY` and the "ელ-ფოსტა რეგისტრაციების მისაღებად" (notification email) field in Pages CMS → Settings are both set — without either, the Function logs the submission instead of emailing it (by design, so the form never hard-fails). Check Cloudflare Pages → **Functions** logs for `[register]` entries to see what happened to a specific submission.
+
+**The registration form says "too many requests."**
+That's the rate limiter — it allows 5 submissions per IP per minute. A genuine student retrying a failed submission a few times will never hit this; it's aimed at bots. It clears itself after a minute.
+
+**A price or date isn't updating.**
+Check sections 3 and 4.4 above — if the daily rebuild stopped running (check the **Actions** tab in GitHub for failed runs), the automatic month/date rollover won't happen until the next successful rebuild. Any manual content save also triggers a rebuild, so saving anything (even re-saving the same value) in Pages CMS is a quick manual fix.
+
+**Something looks visually broken.**
+This is very likely a real bug rather than a content issue — take a screenshot and send it to a developer rather than guessing at a fix in Pages CMS.
+
+---
+
+## 10. For developers
+
+```sh
+npm install
+npm run dev              # local dev server at localhost:4321
+npm run build             # production build to ./dist (also regenerates functions/_data/*.json and public/og/*.png)
+npm run preview           # serve the built site locally
+npm run test               # cohort/early-bird utility unit tests (vitest)
+npm run typecheck:functions  # typecheck the Cloudflare Pages Function in functions/
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+To test the registration Function locally end-to-end (Astro's own dev server doesn't run Pages Functions):
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+```sh
+npm run build
+npx wrangler pages dev ./dist
+```
 
-Any static assets, like images, can be placed in the `public/` directory.
+### Notable architecture decisions
 
-## 🧞 Commands
+- **`functions/_data/*.json`** is generated from `src/content/courses` and `src/content/settings` at build time (`scripts/generate-function-data.mjs`) because Cloudflare Pages Functions run at the edge and can't read Astro content collections directly. It's regenerated on every build, so Pages CMS edits always reach the Function on the next deploy — never hand-edit these files.
+- **`course.instructor`** is a plain string id, not Astro's `reference()` collection helper — Pages CMS's reference field behavior (exact stored format) wasn't something verifiable without a live hosted instance, and a mismatch there would fail the whole build. `src/lib/instructors.ts` resolves it defensively instead.
+- **CSP (`public/_headers`)** allows `'unsafe-inline'` for `script-src` and `style-src`. This is a deliberate tradeoff, not an oversight: Astro's static build inlines some small component scripts/styles directly into the HTML (standard Vite bundling behavior for small single-use chunks), which a strict CSP would block outright. Since this site has no user-generated content rendered anywhere (all template expressions are developer-authored and Astro auto-escapes everything), the realistic XSS risk `'unsafe-inline'` opens up here is low. A stricter CSP via hash-pinning is possible but would need re-pinning on every edit to those specific scripts — not worth the fragility for this site.
+- **OG images** (`public/og/*.png`) are generated at build time from hand-built SVGs rasterized with `@resvg/resvg-js`, embedding real Jost/Noto Sans Georgian TTFs (`scripts/assets/`) rather than relying on fonts being installed in the build container.
 
-All commands are run from the root of the project, from a terminal:
+---
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+## 11. Known placeholders and things to follow up on
 
-## 👀 Want to learn more?
+These were intentionally left for the owner to fill in, since the brief says never to invent facts:
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+- **Instructor bios** — both instructors (გიორგი ჯანიკაშვილი, გიორგი მამალაძე) have an empty bio field. The site correctly shows just name/role/LinkedIn until filled in — add the bio text in Pages CMS whenever ready.
+- **Contact details** (`ზოგადი პარამეტრები` in Pages CMS) — phone, email, WhatsApp/Messenger/Instagram/Facebook links, and the registration notification email are all empty. The site hides each one until set, but the notification email in particular needs to be filled in before real registrations start arriving (see section 9).
+- **Schedules** for Revit, Rhino, and 3ds Max group courses — left as "TBA" per the brief (the site shows "schedule to be confirmed soon" automatically). Fill in via the `group.schedule` field once decided.
+- **3ds Max syllabus** — left empty per the brief (shows "syllabus coming soon" automatically). Add via `syllabus.topics` in Pages CMS once ready.
+- **Privacy policy and Terms pages** — both are explicitly marked on-page as templates; the Terms page's refund/cancellation section in particular is a placeholder with no real policy yet (no refund terms were specified to build from). Have both reviewed by someone qualified before relying on them legally.
+- **Meta Pixel ID, CAPI token, Turnstile keys, Resend key, GA4 ID** — all unset; see sections 5, 7, and 8.
