@@ -1,4 +1,4 @@
-import { defineCollection, reference, z } from 'astro:content';
+import { defineCollection, z } from 'astro:content';
 import { glob } from 'astro/loaders';
 
 const courses = defineCollection({
@@ -23,7 +23,11 @@ const courses = defineCollection({
       enabled: z.boolean().default(true),
       monthlyPrice: z.number(),
     }),
-    instructor: reference('instructors'),
+    // Plain string id rather than Astro's reference() helper: the admin panel
+    // (Pages CMS) writes this value and we can't be certain whether it stores
+    // the bare filename or a path with extension, so resolveInstructor() below
+    // normalizes either form instead of letting a strict reference() fail the build.
+    instructor: z.string(),
     goal: z.string().optional(),
     outcome: z.string().optional(),
     syllabus: z

@@ -1,7 +1,8 @@
 ---
-import { getCollection, getEntry } from 'astro:content';
+import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import CourseCard from '../../components/CourseCard.astro';
+import { resolveInstructor } from '../../lib/instructors';
 
 const courses = (await getCollection('courses', ({ data }) => data.published && data.mentorship.enabled)).sort(
   (a, b) => a.data.order - b.data.order
@@ -10,7 +11,7 @@ const courses = (await getCollection('courses', ({ data }) => data.published && 
 const coursesWithInstructor = await Promise.all(
   courses.map(async (course) => ({
     course,
-    instructor: await getEntry(course.data.instructor),
+    instructor: await resolveInstructor(course.data.instructor),
   }))
 );
 ---

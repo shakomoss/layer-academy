@@ -1,5 +1,5 @@
 ---
-import { getCollection, getEntry } from 'astro:content';
+import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import KeyFacts from '../../components/KeyFacts.astro';
 import PriceBox from '../../components/PriceBox.astro';
@@ -7,6 +7,7 @@ import Syllabus from '../../components/Syllabus.astro';
 import InstructorBio from '../../components/InstructorBio.astro';
 import FAQ from '../../components/FAQ.astro';
 import { buildFaqItems } from '../../lib/faq';
+import { resolveInstructor } from '../../lib/instructors';
 
 export async function getStaticPaths() {
   const courses = await getCollection('courses', ({ data }) => data.published && data.group.enabled);
@@ -15,7 +16,7 @@ export async function getStaticPaths() {
 
 const { course } = Astro.props;
 const { title, slug, group, goal, outcome, syllabus, mentorship, seoTitle, seoDescription } = course.data;
-const instructor = await getEntry(course.data.instructor);
+const instructor = await resolveInstructor(course.data.instructor);
 
 const pageTitle = seoTitle || `${title} კურსი — საბაზისო დონე | Layer Academy`;
 const pageDescription =
