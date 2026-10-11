@@ -6,6 +6,7 @@ import CourseCard from '../components/CourseCard.astro';
 import FAQ from '../components/FAQ.astro';
 import { buildFaqItems } from '../lib/faq';
 import { getCurrentPrice } from '../lib/cohort';
+import { buildEducationalOrganization, buildFaqJsonLd } from '../lib/structured-data';
 
 const groupCourses = (await getCollection('courses', ({ data }) => data.published && data.group.enabled)).sort(
   (a, b) => a.data.order - b.data.order
@@ -17,11 +18,18 @@ const fromGroupPrice = Math.min(
   ...groupCourses.map((c) => getCurrentPrice({ price: c.data.group.price, earlyBirdPrice: c.data.group.earlyBirdPrice, earlyBirdUntil: c.data.group.earlyBirdUntil }).currentPrice)
 );
 const fromMentorshipPrice = Math.min(...mentorshipCourses.map((c) => c.data.mentorship.monthlyPrice));
+
+const faqItems = buildFaqItems();
+const organizationJsonLd = buildEducationalOrganization(Astro.site?.toString() ?? '');
+const faqJsonLd = buildFaqJsonLd(faqItems);
 ---
 <BaseLayout
   title="Layer Academy — არქიტექტურული პროგრამების კურსები ონლაინ"
   description="ისწავლეთ Archicad, AutoCAD, Revit, Rhino და 3ds Max ნულიდან — ჯგუფური კურსები და ინდივიდუალური მენტორინგი ონლაინ, დამწყებთათვის."
 >
+  <script type="application/ld+json" set:html={JSON.stringify(organizationJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
   <section class="container hero">
     <Wordmark />
     <h1>ისწავლეთ არქიტექტურული პროგრამები ნულიდან, ონლაინ</h1>
@@ -97,7 +105,7 @@ const fromMentorshipPrice = Math.min(...mentorshipCourses.map((c) => c.data.ment
 
   <section class="container faq">
     <h2>კითხვები და პასუხები</h2>
-    <FAQ items={buildFaqItems()} />
+    <FAQ items={faqItems} />
   </section>
 
   <section class="container final-cta">

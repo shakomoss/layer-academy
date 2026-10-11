@@ -1,16 +1,23 @@
 ---
-import { getCollection, getEntry } from 'astro:content';
+import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import CourseCard from '../../components/CourseCard.astro';
+import { buildBreadcrumbJsonLd } from '../../lib/structured-data';
 
 const courses = (await getCollection('courses', ({ data }) => data.published && data.group.enabled)).sort(
   (a, b) => a.data.order - b.data.order
 );
+
+const breadcrumbJsonLd = buildBreadcrumbJsonLd([
+  { name: 'მთავარი', url: new URL('/', Astro.site).toString() },
+  { name: 'ჯგუფური კურსები', url: new URL('/group-courses/', Astro.site).toString() },
+]);
 ---
 <BaseLayout
-  title="ჯგუფური კურსები — Archicad, AutoCAD, Revit, Rhino, 3ds Max | Layer Academy"
+  title="არქიტექტურული პროგრამების კურსები — Archicad, AutoCAD, Revit, Rhino, 3ds Max | Layer Academy"
   description="არქიტექტურული პროგრამების ჯგუფური, ლაივ ონლაინ კურსები დამწყებთათვის. ახალი ნაკადი ყოველ თვე."
 >
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
   <section class="container page-intro">
     <h1>ჯგუფური კურსები</h1>
     <p>

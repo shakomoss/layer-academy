@@ -1,5 +1,8 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
+import sitemap from '@astrojs/sitemap';
+
+const NOINDEX_PATHS = ['/register/', '/thank-you/'];
 
 // https://astro.build/config
 export default defineConfig({
@@ -13,4 +16,9 @@ export default defineConfig({
     defaultLocale: 'ka',
     locales: ['ka'],
   },
+  integrations: [
+    sitemap({
+      filter: (page) => !NOINDEX_PATHS.some((path) => page.includes(path)),
+    }),
+  ],
 });

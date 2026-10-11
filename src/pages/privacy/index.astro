@@ -1,14 +1,21 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import { buildBreadcrumbJsonLd } from '../../lib/structured-data';
 
 const [settings] = await getCollection('settings');
 const contactEmail = settings?.data.contactEmail || '';
+
+const breadcrumbJsonLd = buildBreadcrumbJsonLd([
+  { name: 'მთავარი', url: new URL('/', Astro.site).toString() },
+  { name: 'კონფიდენციალურობის პოლიტიკა', url: new URL('/privacy/', Astro.site).toString() },
+]);
 ---
 <BaseLayout
   title="კონფიდენციალურობის პოლიტიკა | Layer Academy"
   description="რა მონაცემებს ვაგროვებთ რეგისტრაციისას, რისთვის ვიყენებთ და როგორ შეგიძლიათ მათი წაშლის მოთხოვნა."
 >
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
   <article class="container legal-page">
     <h1>კონფიდენციალურობის პოლიტიკა</h1>
 

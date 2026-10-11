@@ -1,10 +1,17 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import { buildBreadcrumbJsonLd } from '../../lib/structured-data';
+
+const breadcrumbJsonLd = buildBreadcrumbJsonLd([
+  { name: 'მთავარი', url: new URL('/', Astro.site).toString() },
+  { name: 'წესები და პირობები', url: new URL('/terms/', Astro.site).toString() },
+]);
 ---
 <BaseLayout
   title="წესები და პირობები | Layer Academy"
   description="Layer Academy-ის კურსებზე და მენტორინგზე რეგისტრაციის, გადახდისა და გაუქმების წესები."
 >
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
   <article class="container legal-page">
     <h1>წესები და პირობები</h1>
 

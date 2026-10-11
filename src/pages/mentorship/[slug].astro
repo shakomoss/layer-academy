@@ -9,6 +9,7 @@ import FAQ from '../../components/FAQ.astro';
 import { buildFaqItems } from '../../lib/faq';
 import { resolveInstructor } from '../../lib/instructors';
 import ViewContentTracker from '../../components/ViewContentTracker.astro';
+import { buildBreadcrumbJsonLd, buildCourseJsonLd, buildFaqJsonLd } from '../../lib/structured-data';
 
 export async function getStaticPaths() {
   const courses = await getCollection('courses', ({ data }) => data.published && data.mentorship.enabled);
@@ -28,8 +29,28 @@ const facts = [
   { icon: 'monitor' as const, label: 'ონლაინ' },
   { icon: 'clock' as const, label: 'სწავლის დაწყება ნებისმიერ დროს' },
 ];
+
+const pageUrl = new URL(`/mentorship/${slug}/`, Astro.site).toString();
+const faqItems = buildFaqItems();
+const courseJsonLd = buildCourseJsonLd({
+  name: `${title} — ინდივიდუალური მენტორინგი`,
+  description: pageDescription,
+  url: pageUrl,
+  image: new URL(`/og/${slug}-mentorship.png`, Astro.site).toString(),
+  price: mentorship.monthlyPrice,
+  instructorName: instructor?.data.name ?? '',
+});
+const faqJsonLd = buildFaqJsonLd(faqItems);
+const breadcrumbJsonLd = buildBreadcrumbJsonLd([
+  { name: 'მთავარი', url: new URL('/', Astro.site).toString() },
+  { name: 'ინდივიდუალური მენტორინგი', url: new URL('/mentorship/', Astro.site).toString() },
+  { name: title, url: pageUrl },
+]);
 ---
-<BaseLayout title={pageTitle} description={pageDescription}>
+<BaseLayout title={pageTitle} description={pageDescription} ogImage={`/og/${slug}-mentorship.png`}>
+  <script type="application/ld+json" set:html={JSON.stringify(courseJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
   <ViewContentTracker contentName={title} contentCategory="mentorship" value={mentorship.monthlyPrice} />
   <article class="container course-page">
     <header class="course-header">
@@ -76,7 +97,7 @@ const facts = [
 
     <section class="course-section">
       <h2>კითხვები და პასუხები</h2>
-      <FAQ items={buildFaqItems()} />
+      <FAQ items={faqItems} />
     </section>
 
     {group.enabled && (

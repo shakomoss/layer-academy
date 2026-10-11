@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import CourseCard from '../../components/CourseCard.astro';
 import { resolveInstructor } from '../../lib/instructors';
+import { buildBreadcrumbJsonLd } from '../../lib/structured-data';
 
 const courses = (await getCollection('courses', ({ data }) => data.published && data.mentorship.enabled)).sort(
   (a, b) => a.data.order - b.data.order
@@ -14,11 +15,17 @@ const coursesWithInstructor = await Promise.all(
     instructor: await resolveInstructor(course.data.instructor),
   }))
 );
+
+const breadcrumbJsonLd = buildBreadcrumbJsonLd([
+  { name: 'მთავარი', url: new URL('/', Astro.site).toString() },
+  { name: 'ინდივიდუალური მენტორინგი', url: new URL('/mentorship/', Astro.site).toString() },
+]);
 ---
 <BaseLayout
   title="ინდივიდუალური მენტორინგი — არქიტექტურული პროგრამები | Layer Academy"
   description="ყოველკვირეული 1:1 ონლაინ სესიები მენტორთან — Archicad, AutoCAD, Revit, Rhino, 3ds Max. გადახდა თვეში."
 >
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
   <section class="container page-intro">
     <h1>ინდივიდუალური მენტორინგი</h1>
     <p>

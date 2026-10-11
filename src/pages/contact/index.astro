@@ -1,9 +1,15 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import { buildBreadcrumbJsonLd } from '../../lib/structured-data';
 
 const [settings] = await getCollection('settings');
 const data = settings?.data;
+
+const breadcrumbJsonLd = buildBreadcrumbJsonLd([
+  { name: 'მთავარი', url: new URL('/', Astro.site).toString() },
+  { name: 'კონტაქტი', url: new URL('/contact/', Astro.site).toString() },
+]);
 
 const links = [
   data?.contactPhone ? { href: `tel:${data.contactPhone.replace(/\s+/g, '')}`, label: data.contactPhone, kind: 'phone' } : null,
@@ -18,6 +24,7 @@ const links = [
   title="კონტაქტი | Layer Academy"
   description="დაგვიკავშირდეთ კურსებთან ან მენტორინგთან დაკავშირებული კითხვებისთვის."
 >
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
   <section class="container contact-page">
     <h1>კონტაქტი</h1>
     <p>

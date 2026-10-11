@@ -4,6 +4,8 @@ dist/
 .astro/
 # generated from src/content at build time, see scripts/generate-function-data.mjs
 functions/_data/
+# generated OG images, see scripts/generate-og-images.mjs
+public/og/
 # local wrangler/miniflare dev state
 .wrangler/
 
