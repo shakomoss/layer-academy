@@ -1,0 +1,19 @@
+---
+interface Props {
+  contentName: string;
+  contentCategory: 'group' | 'mentorship';
+  value: number;
+}
+
+const { contentName, contentCategory, value } = Astro.props;
+---
+<script define:vars={{ contentName, contentCategory, value }}>
+  window.__LA_VIEW_CONTENT__ = { contentName, contentCategory, value };
+</script>
+
+<script>
+  import { trackViewContent } from '../lib/tracking';
+
+  const params = window.__LA_VIEW_CONTENT__;
+  if (params) trackViewContent(params);
+</script>

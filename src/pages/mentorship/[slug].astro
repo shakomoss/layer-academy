@@ -8,6 +8,7 @@ import InstructorBio from '../../components/InstructorBio.astro';
 import FAQ from '../../components/FAQ.astro';
 import { buildFaqItems } from '../../lib/faq';
 import { resolveInstructor } from '../../lib/instructors';
+import ViewContentTracker from '../../components/ViewContentTracker.astro';
 
 export async function getStaticPaths() {
   const courses = await getCollection('courses', ({ data }) => data.published && data.mentorship.enabled);
@@ -29,6 +30,7 @@ const facts = [
 ];
 ---
 <BaseLayout title={pageTitle} description={pageDescription}>
+  <ViewContentTracker contentName={title} contentCategory="mentorship" value={mentorship.monthlyPrice} />
   <article class="container course-page">
     <header class="course-header">
       <h1 class="latin software-name">{title}</h1>

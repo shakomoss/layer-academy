@@ -20,6 +20,7 @@ export interface RegistrationInput {
   fbp?: unknown;
   fbc?: unknown;
   turnstileToken?: unknown;
+  trackingConsent?: unknown;
 }
 
 export interface ValidatedRegistration {
@@ -38,6 +39,7 @@ export interface ValidatedRegistration {
   utm: { source: string; medium: string; campaign: string; term: string; content: string };
   fbp: string;
   fbc: string;
+  trackingConsent: boolean;
 }
 
 export interface ValidationError {
@@ -119,6 +121,7 @@ export function validateRegistration(
   const utm = asUtm(input.utm);
   const fbp = asString(input.fbp).slice(0, 100);
   const fbc = asString(input.fbc).slice(0, 100);
+  const trackingConsent = input.trackingConsent === true;
 
   const price =
     type === 'group'
@@ -147,6 +150,7 @@ export function validateRegistration(
       utm,
       fbp,
       fbc,
+      trackingConsent,
     },
   };
 }

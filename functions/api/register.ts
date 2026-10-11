@@ -1,4 +1,5 @@
 import { buildOwnerEmail, buildStudentEmail, sendEmail } from '../_lib/email';
+import { sendMetaCapiLead } from '../_lib/meta-capi';
 import { isWithinRateLimit } from '../_lib/rate-limit';
 import { verifyTurnstile } from '../_lib/turnstile';
 import type { CourseManifestEntry, Env, SettingsManifest } from '../_lib/types';
@@ -67,6 +68,21 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       }
     } else {
       console.log('[register] RESEND_API_KEY or notificationEmail not set — logging instead of sending:', data);
+    }
+
+    if (data.trackingConsent && env.META_CAPI_TOKEN && env.PUBLIC_META_PIXEL_ID) {
+      try {
+        await sendMetaCapiLead(data, {
+          pixelId: env.PUBLIC_META_PIXEL_ID,
+          accessToken: env.META_CAPI_TOKEN,
+          testEventCode: env.META_TEST_EVENT_CODE,
+          clientIp: ip,
+          userAgent: request.headers.get('User-Agent') || '',
+        });
+      } catch (error) {
+        // A Meta outage or bad token must never fail the student's registration.
+        console.error('[register] Meta CAPI call failed:', error);
+      }
     }
 
     return json({ ok: true });

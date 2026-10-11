@@ -23,6 +23,10 @@ export interface Env {
   RESEND_API_KEY?: string;
   RATE_LIMIT_KV?: KVNamespace;
   META_CAPI_TOKEN?: string;
-  META_PIXEL_ID?: string;
+  // Same variable the browser Pixel snippet reads — Cloudflare exposes every
+  // configured env var to Functions regardless of the PUBLIC_ prefix, which
+  // is only an Astro/Vite client-bundling convention. No need for a second,
+  // server-only duplicate of the same Pixel ID.
+  PUBLIC_META_PIXEL_ID?: string;
   META_TEST_EVENT_CODE?: string;
 }

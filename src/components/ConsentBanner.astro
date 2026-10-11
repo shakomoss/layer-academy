@@ -1,0 +1,130 @@
+---
+interface Props {
+  pixelId: string;
+  ga4Id: string;
+}
+
+const { pixelId, ga4Id } = Astro.props;
+---
+<div id="consent-banner" class="consent-banner" role="dialog" aria-live="polite" aria-label="Cookie-ების თანხმობა" hidden>
+  <div class="container consent-inner">
+    <p>
+      ეს საიტი იყენებს cookie-ებს რეკლამების ეფექტურობის გასაზომად. დეტალები შეგიძლიათ იხილოთ ჩვენს
+      <a href="/privacy/">კონფიდენციალურობის პოლიტიკაში</a>.
+    </p>
+    <div class="consent-actions">
+      <button type="button" id="consent-decline" class="btn btn-secondary">უარყოფა</button>
+      <button type="button" id="consent-accept" class="btn btn-primary">მიღება</button>
+    </div>
+  </div>
+</div>
+
+<script define:vars={{ pixelId, ga4Id }}>
+  window.__LA_PIXEL_ID__ = pixelId;
+  window.__LA_GA4_ID__ = ga4Id;
+</script>
+
+<script>
+  import { loadGa4, loadPixel } from '../lib/pixel';
+  import { getConsentChoice, setConsentChoice, trackContact, trackPageView } from '../lib/tracking';
+
+  const banner = document.getElementById('consent-banner') as HTMLElement;
+  const acceptButton = document.getElementById('consent-accept') as HTMLButtonElement;
+  const declineButton = document.getElementById('consent-decline') as HTMLButtonElement;
+
+  function activateTracking() {
+    const pixelId = window.__LA_PIXEL_ID__;
+    const ga4Id = window.__LA_GA4_ID__;
+    if (pixelId) loadPixel(pixelId);
+    if (ga4Id) loadGa4(ga4Id);
+    trackPageView();
+  }
+
+  function showBanner() {
+    banner.hidden = false;
+  }
+
+  function hideBanner() {
+    banner.hidden = true;
+  }
+
+  const existingChoice = getConsentChoice();
+  if (existingChoice === 'accepted') {
+    activateTracking();
+  } else if (existingChoice === null) {
+    showBanner();
+  }
+
+  acceptButton.addEventListener('click', () => {
+    setConsentChoice('accepted');
+    hideBanner();
+    activateTracking();
+  });
+
+  declineButton.addEventListener('click', () => {
+    setConsentChoice('declined');
+    hideBanner();
+  });
+
+  // Footer "cookie settings" link reopens the banner without re-reading storage.
+  document.addEventListener('click', (event) => {
+    const target = event.target as HTMLElement;
+    if (target.closest('[data-reopen-consent]')) {
+      event.preventDefault();
+      showBanner();
+    }
+  });
+
+  // Delegated Contact-link tracking lives here so it only ever fires post-consent.
+  document.addEventListener('click', (event) => {
+    const target = event.target as HTMLElement;
+    if (target.closest('[data-meta-contact]')) trackContact();
+  });
+</script>
+
+<style>
+  .consent-banner {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 60;
+    background: var(--color-ink);
+    color: var(--color-bg);
+    border-top: 1px solid var(--color-divider);
+  }
+
+  .consent-inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+    padding-block: var(--space-2);
+  }
+
+  .consent-banner p {
+    font-size: 0.85rem;
+    max-width: 60ch;
+  }
+
+  .consent-banner a {
+    text-decoration: underline;
+  }
+
+  .consent-actions {
+    display: flex;
+    gap: var(--space-2);
+    flex-shrink: 0;
+  }
+
+  .consent-banner .btn-secondary {
+    border-color: var(--color-bg);
+    color: var(--color-bg);
+  }
+
+  .consent-banner .btn-primary {
+    background: var(--color-bg);
+    color: var(--color-ink);
+  }
+</style>

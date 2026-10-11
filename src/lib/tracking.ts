@@ -12,7 +12,10 @@ export interface UtmParams {
   content: string;
 }
 
+export type ConsentChoice = 'accepted' | 'declined';
+
 const UTM_STORAGE_KEY = 'la_utm_first_touch';
+const CONSENT_STORAGE_KEY = 'la_consent';
 
 function readCookie(name: string): string {
   const match = document.cookie.match(new RegExp(`(?:^|; )${name}=([^;]*)`));
@@ -55,11 +58,20 @@ export function generateEventId(): string {
   return crypto.randomUUID();
 }
 
-function hasConsent(): boolean {
-  return localStorage.getItem('la_consent') === 'accepted';
+export function getConsentChoice(): ConsentChoice | null {
+  const value = localStorage.getItem(CONSENT_STORAGE_KEY);
+  return value === 'accepted' || value === 'declined' ? value : null;
 }
 
-/** No-ops until the consent banner (and Pixel loader) are wired up — safe to call from anywhere. */
+export function setConsentChoice(choice: ConsentChoice): void {
+  localStorage.setItem(CONSENT_STORAGE_KEY, choice);
+}
+
+export function hasConsent(): boolean {
+  return getConsentChoice() === 'accepted';
+}
+
+/** Every call below is a safe no-op when the visitor hasn't consented or the Pixel isn't loaded. */
 export function trackPageView(): void {
   if (hasConsent() && window.fbq) window.fbq('track', 'PageView');
 }

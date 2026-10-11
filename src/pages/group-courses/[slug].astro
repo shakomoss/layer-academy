@@ -8,6 +8,8 @@ import InstructorBio from '../../components/InstructorBio.astro';
 import FAQ from '../../components/FAQ.astro';
 import { buildFaqItems } from '../../lib/faq';
 import { resolveInstructor } from '../../lib/instructors';
+import { getCurrentPrice } from '../../lib/cohort';
+import ViewContentTracker from '../../components/ViewContentTracker.astro';
 
 export async function getStaticPaths() {
   const courses = await getCollection('courses', ({ data }) => data.published && data.group.enabled);
@@ -21,8 +23,14 @@ const instructor = await resolveInstructor(course.data.instructor);
 const pageTitle = seoTitle || `${title} კურსი — საბაზისო დონე | Layer Academy`;
 const pageDescription =
   seoDescription || `${title}-ის ჯგუფური, ონლაინ კურსი დამწყებთათვის. ლაივ ლექციები, საბაზისო დონე.`;
+const currentPrice = getCurrentPrice({
+  price: group.price,
+  earlyBirdPrice: group.earlyBirdPrice,
+  earlyBirdUntil: group.earlyBirdUntil,
+}).currentPrice;
 ---
 <BaseLayout title={pageTitle} description={pageDescription}>
+  <ViewContentTracker contentName={title} contentCategory="group" value={currentPrice} />
   <article class="container course-page">
     <header class="course-header">
       <h1 class="latin software-name">{title}</h1>

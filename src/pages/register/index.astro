@@ -115,7 +115,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY || '';
 
 <script>
   import { getCurrentPrice } from '../../lib/cohort';
-  import { captureUtm, generateEventId, getFbc, getFbp, trackLead } from '../../lib/tracking';
+  import { captureUtm, generateEventId, getFbc, getFbp, hasConsent, trackLead } from '../../lib/tracking';
 
   interface CourseData {
     slug: string;
@@ -272,6 +272,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY || '';
       fbp: getFbp(),
       fbc: getFbc(),
       turnstileToken,
+      trackingConsent: hasConsent(),
     };
 
     submitButton.disabled = true;
