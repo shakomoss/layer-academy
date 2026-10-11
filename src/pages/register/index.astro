@@ -1,0 +1,416 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const courses = (await getCollection('courses', ({ data }) => data.published)).sort(
+  (a, b) => a.data.order - b.data.order
+);
+
+const coursesData = courses.map((c) => ({
+  slug: c.data.slug,
+  title: c.data.title,
+  group: {
+    enabled: c.data.group.enabled,
+    price: c.data.group.price,
+    earlyBirdPrice: c.data.group.earlyBirdPrice ?? null,
+    earlyBirdUntil: c.data.group.earlyBirdUntil ? c.data.group.earlyBirdUntil.toISOString() : null,
+  },
+  mentorship: {
+    enabled: c.data.mentorship.enabled,
+    monthlyPrice: c.data.mentorship.monthlyPrice,
+  },
+}));
+
+const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY || '';
+---
+<BaseLayout title="რეგისტრაცია | Layer Academy" description="დარეგისტრირდით ჯგუფურ კურსზე ან ინდივიდუალურ მენტორინგზე." noindex>
+  <section class="container register-page">
+    <h1>რეგისტრაცია</h1>
+    <p class="register-intro">
+      შეავსეთ ფორმა და დაგიკავშირდებით არჩეული ხერხით, რათა დავაზუსტოთ დეტალები და გამოგიწეროთ ინვოისი.
+    </p>
+
+    <form id="register-form" novalidate>
+      <div class="field">
+        <label for="name">სახელი და გვარი</label>
+        <input type="text" id="name" name="name" required autocomplete="name" />
+      </div>
+
+      <div class="field">
+        <label for="phone">ტელეფონი</label>
+        <input type="tel" id="phone" name="phone" required autocomplete="tel" value="+995" />
+      </div>
+
+      <div class="field">
+        <label for="email">ელ-ფოსტა <span class="optional">(არასავალდებულო)</span></label>
+        <input type="email" id="email" name="email" autocomplete="email" />
+      </div>
+
+      <div class="field">
+        <label for="course">პროგრამა</label>
+        <select id="course" name="course" required>
+          <option value="" disabled selected>აირჩიეთ პროგრამა</option>
+          {coursesData.map((c) => <option value={c.slug}>{c.title}</option>)}
+        </select>
+      </div>
+
+      <fieldset class="field">
+        <legend>ფორმატი</legend>
+        <label class="radio-option">
+          <input type="radio" name="type" value="group" required /> ჯგუფური კურსი
+        </label>
+        <label class="radio-option">
+          <input type="radio" name="type" value="mentorship" /> ინდივიდუალური მენტორინგი
+        </label>
+      </fieldset>
+
+      <fieldset class="field">
+        <legend>სასურველი კონტაქტის ხერხი</legend>
+        <label class="radio-option"><input type="radio" name="preferredContact" value="whatsapp" required /> WhatsApp</label>
+        <label class="radio-option"><input type="radio" name="preferredContact" value="viber" /> Viber</label>
+        <label class="radio-option"><input type="radio" name="preferredContact" value="call" /> ზარი</label>
+        <label class="radio-option"><input type="radio" name="preferredContact" value="email" /> ელ-ფოსტა</label>
+      </fieldset>
+
+      <div class="field">
+        <label for="comment">კომენტარი <span class="optional">(არასავალდებულო)</span></label>
+        <textarea id="comment" name="comment" rows="3"></textarea>
+      </div>
+
+      <div class="honeypot-field" aria-hidden="true">
+        <label for="website">Website</label>
+        <input type="text" id="website" name="website" tabindex="-1" autocomplete="off" />
+      </div>
+
+      <div id="summary-box" class="summary-box" hidden>
+        <p><strong id="summary-program"></strong></p>
+        <p id="summary-price"></p>
+        <p class="summary-payment">გადახდის მეთოდი: ინვოისი (საბანკო გადარიცხვა)</p>
+      </div>
+
+      <div class="field consent-field">
+        <label class="checkbox-option">
+          <input type="checkbox" id="consent" name="consent" required />
+          <span>ვეთანხმები <a href="/privacy/" target="_blank" rel="noopener">კონფიდენციალურობის პოლიტიკას</a></span>
+        </label>
+      </div>
+
+      {turnstileSiteKey && <div id="turnstile-container" class="field"></div>}
+
+      <div id="form-status" role="alert" aria-live="polite" class="form-status"></div>
+
+      <button type="submit" class="btn btn-primary" id="submit-button">გაგზავნა</button>
+    </form>
+  </section>
+</BaseLayout>
+
+{turnstileSiteKey && (
+  <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+)}
+
+<script define:vars={{ coursesData, turnstileSiteKey }}>
+  window.__LA_COURSES__ = coursesData;
+  window.__LA_TURNSTILE_SITE_KEY__ = turnstileSiteKey;
+</script>
+
+<script>
+  import { getCurrentPrice } from '../../lib/cohort';
+  import { captureUtm, generateEventId, getFbc, getFbp, trackLead } from '../../lib/tracking';
+
+  interface CourseData {
+    slug: string;
+    title: string;
+    group: { enabled: boolean; price: number; earlyBirdPrice: number | null; earlyBirdUntil: string | null };
+    mentorship: { enabled: boolean; monthlyPrice: number };
+  }
+
+  declare global {
+    interface Window {
+      __LA_COURSES__: CourseData[];
+      __LA_TURNSTILE_SITE_KEY__: string;
+      turnstile?: {
+        render: (container: string | Element, options: Record<string, unknown>) => string;
+        reset: (widgetId?: string) => void;
+      };
+    }
+  }
+
+  const courses = window.__LA_COURSES__;
+  const form = document.getElementById('register-form') as HTMLFormElement;
+  const courseSelect = document.getElementById('course') as HTMLSelectElement;
+  const typeRadios = form.querySelectorAll<HTMLInputElement>('input[name="type"]');
+  const summaryBox = document.getElementById('summary-box') as HTMLElement;
+  const summaryProgram = document.getElementById('summary-program') as HTMLElement;
+  const summaryPrice = document.getElementById('summary-price') as HTMLElement;
+  const statusBox = document.getElementById('form-status') as HTMLElement;
+  const submitButton = document.getElementById('submit-button') as HTMLButtonElement;
+
+  let turnstileToken = '';
+  let turnstileWidgetId: string | undefined;
+
+  function setupTurnstile() {
+    const container = document.getElementById('turnstile-container');
+    if (!container || !window.__LA_TURNSTILE_SITE_KEY__) return;
+    const tryRender = () => {
+      if (!window.turnstile) {
+        setTimeout(tryRender, 100);
+        return;
+      }
+      turnstileWidgetId = window.turnstile.render(container, {
+        sitekey: window.__LA_TURNSTILE_SITE_KEY__,
+        callback: (token: string) => {
+          turnstileToken = token;
+        },
+      });
+    };
+    tryRender();
+  }
+  setupTurnstile();
+
+  // Pre-fill from ?course=slug&type=group|mentorship
+  const urlParams = new URLSearchParams(window.location.search);
+  const prefCourse = urlParams.get('course');
+  const prefType = urlParams.get('type');
+  if (prefCourse && courses.some((c) => c.slug === prefCourse)) {
+    courseSelect.value = prefCourse;
+  }
+  if (prefType === 'group' || prefType === 'mentorship') {
+    const radio = form.querySelector<HTMLInputElement>(`input[name="type"][value="${prefType}"]`);
+    if (radio) radio.checked = true;
+  }
+
+  function currentCourse(): CourseData | undefined {
+    return courses.find((c) => c.slug === courseSelect.value);
+  }
+
+  function currentType(): 'group' | 'mentorship' | undefined {
+    const checked = form.querySelector<HTMLInputElement>('input[name="type"]:checked');
+    return checked?.value as 'group' | 'mentorship' | undefined;
+  }
+
+  function updateTypeAvailability() {
+    const course = currentCourse();
+    typeRadios.forEach((radio) => {
+      if (!course) {
+        radio.disabled = false;
+        return;
+      }
+      radio.disabled = radio.value === 'group' ? !course.group.enabled : !course.mentorship.enabled;
+      if (radio.disabled && radio.checked) radio.checked = false;
+    });
+  }
+
+  function updateSummary() {
+    const course = currentCourse();
+    const type = currentType();
+
+    if (!course || !type) {
+      summaryBox.hidden = true;
+      return;
+    }
+
+    summaryBox.hidden = false;
+    const typeLabel = type === 'group' ? 'ჯგუფური კურსი' : 'ინდივიდუალური მენტორინგი';
+    summaryProgram.textContent = `${course.title} — ${typeLabel}`;
+
+    if (type === 'group') {
+      const { currentPrice, isEarlyBird } = getCurrentPrice({
+        price: course.group.price,
+        earlyBirdPrice: course.group.earlyBirdPrice ?? undefined,
+        earlyBirdUntil: course.group.earlyBirdUntil ?? undefined,
+      });
+      summaryPrice.textContent = isEarlyBird ? `ფასი: ${currentPrice} ₾ (ფასდაკლებით)` : `ფასი: ${currentPrice} ₾`;
+    } else {
+      summaryPrice.textContent = `ფასი: ${course.mentorship.monthlyPrice} ₾ / თვეში`;
+    }
+  }
+
+  courseSelect.addEventListener('change', () => {
+    updateTypeAvailability();
+    updateSummary();
+  });
+  typeRadios.forEach((radio) => radio.addEventListener('change', updateSummary));
+  updateTypeAvailability();
+  updateSummary();
+
+  function showError(message: string) {
+    statusBox.textContent = message;
+    statusBox.classList.add('is-error');
+  }
+
+  function clearError() {
+    statusBox.textContent = '';
+    statusBox.classList.remove('is-error');
+  }
+
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    clearError();
+
+    const course = currentCourse();
+    const type = currentType();
+    if (!course || !type) {
+      showError('გთხოვთ, შეავსოთ ყველა სავალდებულო ველი.');
+      return;
+    }
+
+    const formData = new FormData(form);
+    const eventId = generateEventId();
+    const payload = {
+      name: formData.get('name'),
+      phone: formData.get('phone'),
+      email: formData.get('email'),
+      course: course.slug,
+      type,
+      preferredContact: formData.get('preferredContact'),
+      comment: formData.get('comment'),
+      consent: formData.get('consent') === 'on',
+      website: formData.get('website'),
+      eventId,
+      pageUrl: window.location.href,
+      utm: captureUtm(),
+      fbp: getFbp(),
+      fbc: getFbc(),
+      turnstileToken,
+    };
+
+    submitButton.disabled = true;
+    try {
+      const response = await fetch('/api/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const result = (await response.json()) as { ok: boolean; error?: string };
+
+      if (!result.ok) {
+        showError(result.error || 'დაფიქსირდა შეცდომა. გთხოვთ, სცადოთ ხელახლა.');
+        submitButton.disabled = false;
+        if (window.turnstile && turnstileWidgetId) window.turnstile.reset(turnstileWidgetId);
+        return;
+      }
+
+      const price =
+        type === 'group'
+          ? getCurrentPrice({
+              price: course.group.price,
+              earlyBirdPrice: course.group.earlyBirdPrice ?? undefined,
+              earlyBirdUntil: course.group.earlyBirdUntil ?? undefined,
+            }).currentPrice
+          : course.mentorship.monthlyPrice;
+
+      trackLead({ contentName: course.title, value: price, eventId });
+      window.location.href = `/thank-you/?course=${encodeURIComponent(course.slug)}&type=${encodeURIComponent(type)}`;
+    } catch {
+      showError('დაფიქსირდა შეცდომა ინტერნეტ კავშირთან. გთხოვთ, სცადოთ ხელახლა.');
+      submitButton.disabled = false;
+    }
+  });
+</script>
+
+<style>
+  .register-page {
+    padding-block: var(--space-5) var(--space-6);
+    max-width: 60ch;
+  }
+
+  .register-intro {
+    color: var(--color-muted);
+    margin-bottom: var(--space-4);
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .field label,
+  .field legend {
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+
+  .optional {
+    font-weight: 400;
+    color: var(--color-muted);
+  }
+
+  input[type='text'],
+  input[type='tel'],
+  input[type='email'],
+  select,
+  textarea {
+    min-height: 44px;
+    padding: 0.6rem 0.75rem;
+    border: 1px solid var(--color-divider);
+    background: var(--color-bg);
+    color: var(--color-ink);
+    font-family: inherit;
+    font-size: 1rem;
+  }
+
+  textarea {
+    min-height: 88px;
+    resize: vertical;
+  }
+
+  fieldset {
+    border: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .radio-option,
+  .checkbox-option {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.95rem;
+    min-height: 44px;
+  }
+
+  .radio-option input:disabled {
+    opacity: 0.4;
+  }
+
+  .honeypot-field {
+    position: absolute;
+    left: -9999px;
+    top: auto;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+
+  .summary-box {
+    border: 1px solid var(--color-ink);
+    padding: var(--space-3);
+  }
+
+  .summary-payment {
+    color: var(--color-muted);
+    font-size: 0.9rem;
+    margin-top: 0.4rem;
+  }
+
+  .consent-field a {
+    text-decoration: underline;
+  }
+
+  .form-status {
+    min-height: 1.5em;
+  }
+
+  .form-status.is-error {
+    color: #8a2e2e;
+  }
+</style>

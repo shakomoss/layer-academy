@@ -1,0 +1,58 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const [settings] = await getCollection('settings');
+const data = settings?.data;
+
+const quickLinks = [
+  data?.whatsappUrl ? { href: data.whatsappUrl, label: 'WhatsApp' } : null,
+  data?.messengerUrl ? { href: data.messengerUrl, label: 'Messenger' } : null,
+].filter(Boolean) as { href: string; label: string }[];
+---
+<BaseLayout title="რეგისტრაცია მიღებულია | Layer Academy" description="თქვენი რეგისტრაცია მიღებულია." noindex>
+  <section class="container thank-you-page">
+    <h1>რეგისტრაცია მიღებულია</h1>
+    <p>
+      გმადლობთ რეგისტრაციისთვის. მალე დაგიკავშირდებით თქვენ მიერ არჩეული ხერხით, დავაზუსტებთ დეტალებს და
+      გამოგიწერთ ინვოისს გადასახდელად.
+    </p>
+
+    {quickLinks.length > 0 && (
+      <div class="quick-links">
+        <p>სურვილის შემთხვევაში, დაგვიკავშირდეთ პირდაპირ:</p>
+        <ul>
+          {quickLinks.map((link) => (
+            <li><a href={link.href} class="btn btn-secondary">{link.label}</a></li>
+          ))}
+        </ul>
+      </div>
+    )}
+
+    <a href="/" class="btn btn-primary back-home">მთავარ გვერდზე დაბრუნება</a>
+  </section>
+</BaseLayout>
+
+<style>
+  .thank-you-page {
+    padding-block: var(--space-6);
+    max-width: 55ch;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .quick-links ul {
+    list-style: none;
+    margin: var(--space-2) 0 0;
+    padding: 0;
+    display: flex;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+  }
+
+  .back-home {
+    align-self: flex-start;
+    margin-top: var(--space-3);
+  }
+</style>

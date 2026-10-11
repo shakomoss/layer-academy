@@ -2,6 +2,10 @@
 dist/
 # generated types
 .astro/
+# generated from src/content at build time, see scripts/generate-function-data.mjs
+functions/_data/
+# local wrangler/miniflare dev state
+.wrangler/
 
 # dependencies
 node_modules/
