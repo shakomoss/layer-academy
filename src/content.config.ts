@@ -54,7 +54,6 @@ const instructors = defineCollection({
     name: z.string(),
     role: z.string(),
     bio: z.string().default(''),
-    linkedin: z.string().url(),
   }),
 });
 

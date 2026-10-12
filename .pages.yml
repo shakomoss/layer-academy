@@ -185,13 +185,8 @@ content:
 
       - name: bio
         label: "ბიოგრაფია"
-        description: "არასავალდებულო. დაცარიელების შემთხვევაში საიტზე გამოჩნდება მხოლოდ სახელი, როლი და LinkedIn ბმული — ტექსტი არ გამოჩნდება."
+        description: "არასავალდებულო. დაცარიელების შემთხვევაში საიტზე გამოჩნდება მხოლოდ სახელი და როლი — ტექსტი არ გამოჩნდება."
         type: text
-
-      - name: linkedin
-        label: "LinkedIn ბმული"
-        type: string
-        required: true
 
   - name: settings
     label: "ზოგადი პარამეტრები"

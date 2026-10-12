@@ -3,18 +3,14 @@ interface Props {
   name: string;
   role: string;
   bio?: string;
-  linkedin: string;
 }
 
-const { name, role, bio, linkedin } = Astro.props;
+const { name, role, bio } = Astro.props;
 ---
 <div class="instructor-bio">
   <p class="instructor-name">{name}</p>
   <p class="instructor-role">{role}</p>
   {bio && <p class="instructor-text">{bio}</p>}
-  <a href={linkedin} class="instructor-linkedin" target="_blank" rel="noopener noreferrer">
-    LinkedIn
-  </a>
 </div>
 
 <style>
@@ -36,12 +32,5 @@ const { name, role, bio, linkedin } = Astro.props;
 
   .instructor-text {
     margin-top: 0.4rem;
-  }
-
-  .instructor-linkedin {
-    margin-top: 0.4rem;
-    font-size: 0.85rem;
-    text-decoration: underline;
-    align-self: flex-start;
   }
 </style>
