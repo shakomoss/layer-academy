@@ -9,7 +9,7 @@ group:
   price: 690
 mentorship:
   enabled: true
-  monthlyPrice: 930
+  monthlyPrice: 1390
 instructor: giorgi-janikashvili
 syllabus:
   topics:

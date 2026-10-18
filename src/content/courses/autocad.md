@@ -13,7 +13,7 @@ group:
   schedule: კვირა, 18:00
 mentorship:
   enabled: true
-  monthlyPrice: 460
+  monthlyPrice: 690
 instructor: giorgi-janikashvili
 syllabus:
   topics:

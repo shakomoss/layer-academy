@@ -9,6 +9,6 @@ group:
   price: 390
 mentorship:
   enabled: true
-  monthlyPrice: 530
+  monthlyPrice: 790
 instructor: giorgi-mamaladze
 ---
