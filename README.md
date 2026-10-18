@@ -109,6 +109,8 @@ The site is designed to **work before any of these are set** — registrations j
 | `PUBLIC_META_PIXEL_ID` + `META_CAPI_TOKEN` | Meta ads tracking (Pixel + Conversions API) | Meta Events Manager → your Pixel → Settings. See section 9 |
 | `META_TEST_EVENT_CODE` | *Temporary* — only while testing in Meta Events Manager's Test Events tab | Same screen as above; **remove this variable once you're done testing** |
 | `PUBLIC_GA4_ID` | Optional Google Analytics 4 | analytics.google.com → Admin → Data Streams |
+| `PUBLIC_CLARITY_ID` | Optional Microsoft Clarity (free session recordings + heatmaps) | [clarity.microsoft.com](https://clarity.microsoft.com) → New project. See section 7.1 |
+| `PUBLIC_MESSENGER_PAGE_ID` | Optional Messenger live chat bubble | Your Facebook Page → Settings → General → Page ID. See section 7.2 |
 
 **Rate limiting note:** the registration endpoint has basic abuse protection built in even with no extra setup. For stronger protection, bind a free Cloudflare KV namespace named `RATE_LIMIT_KV` to the Pages project (**Settings → Functions → KV namespace bindings**) — no code changes needed, the Function picks it up automatically if present.
 
@@ -142,6 +144,27 @@ Ads tracking is **off by default** — the site works fully without it, and noth
 ### Later: offline conversions
 
 Once a registered student actually pays and starts, you can upload that as an **offline conversion** in Events Manager (Business Settings → **Data Sources → Offline Event Sets**) — match by the phone/email they registered with. This closes the loop from "lead" to "paying student" for ad optimization, without any code changes; it's a manual CSV upload (or a spreadsheet export from wherever you track payments) whenever you want to do it.
+
+### 7.1 Microsoft Clarity (optional)
+
+What it actually is: a free tool that records anonymized screen sessions of real visitors and builds click/scroll heatmaps — so instead of guessing why someone didn't register, you can literally watch the recording and see where they hesitated, scrolled past, or gave up. No code or technical skill needed to use it day-to-day, just a dashboard.
+
+1. [clarity.microsoft.com](https://clarity.microsoft.com) → sign in → **New project** → point it at your domain.
+2. Copy the **Project ID** (in the project's Setup instructions) into `PUBLIC_CLARITY_ID`, redeploy.
+3. Give it a day or two of real traffic, then check the **Recordings** and **Heatmaps** tabs in the Clarity dashboard. That's the entire workflow — nothing to configure on an ongoing basis.
+
+Same consent rule as the Pixel: it only loads after a visitor accepts the cookie banner.
+
+### 7.2 Messenger live chat (optional)
+
+Adds the Messenger chat bubble (bottom-right) so visitors can message your Facebook Page directly from the site, and you reply from Messenger like normal.
+
+1. You need an existing Facebook **Page** for the business (not a personal profile) — if you don't have one yet, create it at facebook.com/pages/create first.
+2. Find the Page ID: your Page → **Settings → General**, or go to `facebook.com/<your-page>/about` and scroll to the bottom.
+3. Put that ID in `PUBLIC_MESSENGER_PAGE_ID`, redeploy.
+4. Meta also requires you to **allowlist your domain** for the chat plugin once: Facebook Page → Settings → **Advanced Messaging** (or Meta Business Suite → Inbox settings) → add `layeracademy.ge` (your real domain) under allowed domains for Customer Chat.
+
+One thing to watch for once it's live: the chat bubble and the mobile sticky price bar on course pages both sit near the bottom of the screen — check on a real phone that they don't visually overlap, and tell me if they do so I can adjust the positioning.
 
 ---
 
@@ -205,9 +228,10 @@ npx wrangler pages dev ./dist
 
 These were intentionally left for the owner to fill in, since the brief says never to invent facts:
 
-- **Instructor bios** — both instructors (გიორგი ჯანიკაშვილი, გიორგი მამალაძე) have an empty bio field. The site correctly shows just name/role/LinkedIn until filled in — add the bio text in Pages CMS whenever ready.
+- **Instructor bios** — both instructors (გიორგი ჯანიკაშვილი, გიორგი მამალაძე) have an empty bio field. The site correctly shows just name/role until filled in — give me their real background (years of experience, where they've worked/taught, notable projects) and I'll write the bios from that; I won't invent credentials for real people.
 - **Contact details** (`ზოგადი პარამეტრები` in Pages CMS) — phone, email, WhatsApp/Messenger/Instagram/Facebook links, and the registration notification email are all empty. The site hides each one until set, but the notification email in particular needs to be filled in before real registrations start arriving (see section 9).
 - **Schedules** for Revit, Rhino, and 3ds Max group courses — left as "TBA" per the brief (the site shows "schedule to be confirmed soon" automatically). Fill in via the `group.schedule` field once decided.
 - **3ds Max syllabus** — left empty per the brief (shows "syllabus coming soon" automatically). Add via `syllabus.topics` in Pages CMS once ready.
-- **Privacy policy and Terms pages** — both are explicitly marked on-page as templates; the Terms page's refund/cancellation section in particular is a placeholder with no real policy yet (no refund terms were specified to build from). Have both reviewed by someone qualified before relying on them legally.
-- **Meta Pixel ID, CAPI token, Turnstile keys, Resend key, GA4 ID** — all unset; see sections 5, 7, and 8.
+- **Privacy policy** — still marked on-page as a template; have it reviewed by someone qualified before relying on it legally.
+- **Terms page refund policy** — no longer a bare placeholder: it now has an actual tiered policy (100% refund before a course starts, tapering down to 0% once 75%+ of the course has been delivered; mentorship can be cancelled anytime with no charge for a month not yet started). This is a drafted starting point based on what you described, not something checked against Georgian consumer-protection law — have it reviewed before relying on it legally, same as Privacy.
+- **Meta Pixel ID, CAPI token, Turnstile keys, Resend key, GA4 ID, Clarity ID, Messenger Page ID** — all unset; see sections 5, 7, 7.1, 7.2, and 8.

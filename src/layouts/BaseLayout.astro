@@ -27,6 +27,8 @@ const [settings] = await getCollection('settings');
 const domainVerification = settings?.data.metaDomainVerification || '';
 const pixelId = import.meta.env.PUBLIC_META_PIXEL_ID || '';
 const ga4Id = import.meta.env.PUBLIC_GA4_ID || '';
+const clarityId = import.meta.env.PUBLIC_CLARITY_ID || '';
+const messengerPageId = import.meta.env.PUBLIC_MESSENGER_PAGE_ID || '';
 ---
 <!doctype html>
 <html lang="ka">
@@ -63,6 +65,6 @@ const ga4Id = import.meta.env.PUBLIC_GA4_ID || '';
       <slot />
     </main>
     <Footer />
-    <ConsentBanner pixelId={pixelId} ga4Id={ga4Id} />
+    <ConsentBanner pixelId={pixelId} ga4Id={ga4Id} clarityId={clarityId} messengerPageId={messengerPageId} />
   </body>
 </html>

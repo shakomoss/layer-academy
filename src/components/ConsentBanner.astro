@@ -2,9 +2,11 @@
 interface Props {
   pixelId: string;
   ga4Id: string;
+  clarityId: string;
+  messengerPageId: string;
 }
 
-const { pixelId, ga4Id } = Astro.props;
+const { pixelId, ga4Id, clarityId, messengerPageId } = Astro.props;
 ---
 <div
   id="consent-banner"
@@ -14,12 +16,14 @@ const { pixelId, ga4Id } = Astro.props;
   aria-label="Cookie-ების თანხმობა"
   data-pixel-id={pixelId}
   data-ga4-id={ga4Id}
+  data-clarity-id={clarityId}
+  data-messenger-page-id={messengerPageId}
   hidden
 >
   <div class="container consent-inner">
     <p>
-      ეს საიტი იყენებს cookie-ებს რეკლამების ეფექტურობის გასაზომად. დეტალები შეგიძლიათ იხილოთ ჩვენს
-      <a href="/privacy/">კონფიდენციალურობის პოლიტიკაში</a>.
+      ეს საიტი იყენებს cookie-ებს რეკლამების ეფექტურობის გასაზომად და საიტის გამოყენების გასაუმჯობესებლად.
+      დეტალები შეგიძლიათ იხილოთ ჩვენს <a href="/privacy/">კონფიდენციალურობის პოლიტიკაში</a>.
     </p>
     <div class="consent-actions">
       <button type="button" id="consent-decline" class="btn btn-secondary">უარყოფა</button>
@@ -28,8 +32,15 @@ const { pixelId, ga4Id } = Astro.props;
   </div>
 </div>
 
+{messengerPageId && (
+  <>
+    <div id="fb-root"></div>
+    <div id="fb-customer-chat" class="fb-customerchat"></div>
+  </>
+)}
+
 <script>
-  import { loadGa4, loadPixel } from '../lib/pixel';
+  import { loadClarity, loadGa4, loadMessengerChat, loadPixel } from '../lib/pixel';
   import { getConsentChoice, setConsentChoice, trackContact, trackPageView } from '../lib/tracking';
 
   const banner = document.getElementById('consent-banner') as HTMLElement;
@@ -39,8 +50,12 @@ const { pixelId, ga4Id } = Astro.props;
   function activateTracking() {
     const pixelId = banner.dataset.pixelId;
     const ga4Id = banner.dataset.ga4Id;
+    const clarityId = banner.dataset.clarityId;
+    const messengerPageId = banner.dataset.messengerPageId;
     if (pixelId) loadPixel(pixelId);
     if (ga4Id) loadGa4(ga4Id);
+    if (clarityId) loadClarity(clarityId);
+    if (messengerPageId) loadMessengerChat(messengerPageId);
     trackPageView();
   }
 
