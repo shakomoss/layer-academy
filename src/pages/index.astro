@@ -80,6 +80,14 @@ const faqJsonLd = buildFaqJsonLd(faqItems);
         <p class="fact-main">მცირე ჯგუფები</p>
         <p class="fact-sub">5 სტუდენტამდე</p>
       </div>
+      <div class="hero-fact">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <circle cx="12" cy="9.5" r="5" />
+          <path d="M9 13.5 7 20l5-2.5 5 2.5-2-6.5" />
+        </svg>
+        <p class="fact-main">სერტიფიკატი</p>
+        <p class="fact-sub">კურსის დასრულებისას</p>
+      </div>
     </div>
   </section>
 
@@ -176,7 +184,7 @@ const faqJsonLd = buildFaqJsonLd(faqItems);
     border-top: 1px solid #1c1b19;
     border-bottom: 1px solid #1c1b19;
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, minmax(0, 1fr));
   }
 
   .hero-fact {
@@ -207,12 +215,39 @@ const faqJsonLd = buildFaqJsonLd(faqItems);
     color: #55514a;
   }
 
-  @media (max-width: 759px) {
+  @media (min-width: 1024px) {
+    .hero-fact .fact-main,
+    .hero-fact .fact-sub {
+      white-space: nowrap;
+    }
+  }
+
+  @media (max-width: 1023px) {
     .hero-facts {
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 
     .hero-fact:not(:first-child) {
+      border-left: none;
+    }
+
+    .hero-fact:nth-child(3n + 2),
+    .hero-fact:nth-child(3n) {
+      border-left: 1px solid #cfcac0;
+    }
+
+    .hero-fact:nth-child(n + 4) {
+      border-top: 1px solid #cfcac0;
+    }
+  }
+
+  @media (max-width: 639px) {
+    .hero-facts {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .hero-fact:nth-child(3n + 2),
+    .hero-fact:nth-child(3n) {
       border-left: none;
     }
 
@@ -222,6 +257,10 @@ const faqJsonLd = buildFaqJsonLd(faqItems);
 
     .hero-fact:nth-child(n + 3) {
       border-top: 1px solid #cfcac0;
+    }
+
+    .hero-fact:last-child {
+      grid-column: span 2;
     }
   }
 
