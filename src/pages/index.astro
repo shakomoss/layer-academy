@@ -1,7 +1,6 @@
 ---
 import { getCollection, render } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import Wordmark from '../components/Wordmark.astro';
 import GroupCourseCard from '../components/GroupCourseCard.astro';
 import InstructorFactTags from '../components/InstructorFactTags.astro';
 import TwoWays from '../components/TwoWays.astro';
@@ -40,11 +39,47 @@ const faqJsonLd = buildFaqJsonLd(faqItems);
   <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
 
   <section class="container hero">
-    <Wordmark />
-    <h1>ისწავლეთ არქიტექტურული პროგრამები ნულიდან, ონლაინ</h1>
+    <h1>ისწავლეთ არქიტექტურული პროგრამები<br />ნულიდან, ონლაინ</h1>
+    <p class="hero-software latin">AUTOCAD · ARCHICAD · REVIT · RHINO · 3DS MAX</p>
     <div class="hero-actions">
       <a href="/group-courses/" class="btn btn-primary">ჯგუფური კურსები</a>
       <a href="/mentorship/" class="btn btn-secondary">ინდივიდუალური მენტორინგი</a>
+    </div>
+    <div class="hero-facts">
+      <div class="hero-fact">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <circle cx="12" cy="12" r="8.5" />
+          <path d="M12 7.5v5l3.5 2" />
+        </svg>
+        <p class="fact-main">ლაივ ონლაინ</p>
+        <p class="fact-sub">ლექციები</p>
+      </div>
+      <div class="hero-fact">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <rect x="3.5" y="5.5" width="17" height="13" rx="1" />
+          <path d="M10 10l4 2.5-4 2.5z" />
+        </svg>
+        <p class="fact-main">ყველა ლექციის</p>
+        <p class="fact-sub">ჩანაწერი</p>
+      </div>
+      <div class="hero-fact">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <path d="M12 4.5 3.5 9 12 13.5 20.5 9z" />
+          <path d="M7 11v4.5c0 1.5 2.2 3 5 3s5-1.5 5-3V11" />
+        </svg>
+        <p class="fact-main">დამწყებთათვის</p>
+        <p class="fact-sub">ნულიდან</p>
+      </div>
+      <div class="hero-fact">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <circle cx="8.5" cy="9" r="3" />
+          <circle cx="16.5" cy="10" r="2.3" />
+          <path d="M3.5 19c0-2.8 2.2-5 5-5s5 2.2 5 5" />
+          <path d="M14.3 14.3c2.2.3 3.7 2.1 3.7 4.7" />
+        </svg>
+        <p class="fact-main">მცირე ჯგუფები</p>
+        <p class="fact-sub">5 სტუდენტამდე</p>
+      </div>
     </div>
   </section>
 
@@ -117,17 +152,95 @@ const faqJsonLd = buildFaqJsonLd(faqItems);
 
 <style>
   .hero {
-    padding-block: var(--space-6) var(--space-5);
+    padding-block: 96px 80px;
     text-align: center;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: var(--space-3);
   }
 
   .hero h1 {
-    font-size: clamp(1.8rem, 4vw, 2.6rem);
-    max-width: 24ch;
+    font-size: clamp(40px, 5vw, 68px);
+    font-weight: 500;
+    line-height: 1.2;
+    max-width: 960px;
+  }
+
+  .hero h1 br {
+    display: none;
+  }
+
+  @media (min-width: 760px) {
+    .hero h1 br {
+      display: inline;
+    }
+  }
+
+  .hero-software {
+    margin-top: 24px;
+    font-size: 18px;
+    letter-spacing: 4px;
+    color: #55514a;
+  }
+
+  .hero > .hero-actions {
+    margin-top: 40px;
+  }
+
+  .hero-facts {
+    margin-top: 64px;
+    width: 100%;
+    max-width: 1160px;
+    border-top: 1px solid #1c1b19;
+    border-bottom: 1px solid #1c1b19;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .hero-fact {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 28px 16px;
+  }
+
+  .hero-fact:not(:first-child) {
+    border-left: 1px solid #cfcac0;
+  }
+
+  .hero-fact svg {
+    width: 24px;
+    height: 24px;
+    color: var(--color-ink);
+  }
+
+  .hero-fact .fact-main {
+    font-size: 18px;
+    font-weight: 600;
+  }
+
+  .hero-fact .fact-sub {
+    font-size: 15px;
+    color: #55514a;
+  }
+
+  @media (max-width: 759px) {
+    .hero-facts {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .hero-fact:not(:first-child) {
+      border-left: none;
+    }
+
+    .hero-fact:nth-child(even) {
+      border-left: 1px solid #cfcac0;
+    }
+
+    .hero-fact:nth-child(n + 3) {
+      border-top: 1px solid #cfcac0;
+    }
   }
 
   .hero-actions {

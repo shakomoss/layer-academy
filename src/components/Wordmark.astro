@@ -1,10 +1,11 @@
 ---
 interface Props {
   as?: 'div' | 'span';
+  underline?: boolean;
 }
-const { as: Tag = 'div' } = Astro.props;
+const { as: Tag = 'div', underline = true } = Astro.props;
 ---
-<Tag class="wordmark-mark">LAYER ACADEMY</Tag>
+<Tag class={`wordmark-mark ${underline ? 'wordmark-underline' : ''}`}>LAYER ACADEMY</Tag>
 
 <style>
   .wordmark-mark {
@@ -13,8 +14,11 @@ const { as: Tag = 'div' } = Astro.props;
     font-weight: 400;
     font-size: 1.1rem;
     letter-spacing: 0.3em;
+    white-space: nowrap;
+  }
+
+  .wordmark-underline {
     padding-bottom: 0.6em;
     border-bottom: 1px solid var(--color-ink);
-    white-space: nowrap;
   }
 </style>
