@@ -41,6 +41,7 @@ const courseJsonLd = buildCourseJsonLd({
   url: pageUrl,
   image: new URL(`/og/${slug}-mentorship.png`, Astro.site).toString(),
   price: mentorship.monthlyPrice,
+  instructorName: instructor?.data.name,
   instructorTitle: instructor?.data.title,
   instructorOneLiner: instructor?.data.oneLiner,
 });
@@ -109,7 +110,12 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd([
       ctaHref={registerHref}
       instructor={
         instructor
-          ? { title: instructor.data.title, oneLiner: instructor.data.oneLiner, facts: instructor.data.facts }
+          ? {
+              name: instructor.data.name,
+              title: instructor.data.title,
+              oneLiner: instructor.data.oneLiner,
+              facts: instructor.data.facts,
+            }
           : undefined
       }
     />

@@ -4,6 +4,7 @@ import FactRows, { type FactRow } from './FactRows.astro';
 import InstructorFactTags from './InstructorFactTags.astro';
 
 interface SidebarInstructor {
+  name: string;
   title: string;
   oneLiner: string;
   facts?: string[];
@@ -47,6 +48,7 @@ const {
     <>
       <hr class="sidebar-rule" />
       <p class="sidebar-instructor-label">ლექტორი</p>
+      <p class="sidebar-instructor-name">{instructor.name}</p>
       <p class="sidebar-instructor-title">{instructor.title}</p>
       <p class="sidebar-instructor-oneliner">{instructor.oneLiner}</p>
       {instructor.facts && <InstructorFactTags facts={instructor.facts} />}
@@ -95,10 +97,16 @@ const {
     color: var(--color-muted);
   }
 
-  .sidebar-instructor-title {
+  .sidebar-instructor-name {
     margin: 0.3rem 0 0;
     font-size: 16px;
     font-weight: 600;
+  }
+
+  .sidebar-instructor-title {
+    margin: 0.1rem 0 0;
+    font-size: 13px;
+    color: var(--color-muted);
   }
 
   .sidebar-instructor-oneliner {

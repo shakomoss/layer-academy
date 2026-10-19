@@ -14,8 +14,7 @@ export interface CourseJsonLdInput {
   image: string;
   price: number;
   schedule?: string;
-  // Instructors are intentionally anonymous — see src/content/instructors
-  // and the privacy note in src/lib/instructors.ts. No name field here.
+  instructorName?: string;
   instructorTitle?: string;
   instructorOneLiner?: string;
 }
@@ -36,11 +35,12 @@ export function buildCourseJsonLd(input: CourseJsonLdInput) {
       '@type': 'CourseInstance',
       courseMode: 'online',
       ...(input.schedule ? { courseSchedule: input.schedule } : {}),
-      ...(input.instructorTitle
+      ...(input.instructorName
         ? {
             instructor: {
               '@type': 'Person',
-              jobTitle: input.instructorTitle,
+              name: input.instructorName,
+              ...(input.instructorTitle ? { jobTitle: input.instructorTitle } : {}),
               ...(input.instructorOneLiner ? { description: input.instructorOneLiner } : {}),
             },
           }

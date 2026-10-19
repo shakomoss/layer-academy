@@ -4,18 +4,16 @@ import PriceBox from './PriceBox.astro';
 
 interface Props {
   course: CollectionEntry<'courses'>;
-  // Profession/title only — instructors are intentionally anonymous, see
-  // src/content.config.ts and src/lib/instructors.ts.
-  instructorTitle?: string;
+  instructorName?: string;
 }
 
-const { course, instructorTitle } = Astro.props;
+const { course, instructorName } = Astro.props;
 const { title, slug, mentorship } = course.data;
 const href = `/mentorship/${slug}/`;
 ---
 <article class="course-card">
   <h3 class="latin">{title}</h3>
-  {instructorTitle && <p class="course-mentor">{instructorTitle}</p>}
+  {instructorName && <p class="course-mentor">{instructorName}</p>}
   <PriceBox price={mentorship.monthlyPrice} suffix=" / თვეში" />
   <a href={href} class="btn btn-secondary course-link">პროგრამის ნახვა</a>
 </article>

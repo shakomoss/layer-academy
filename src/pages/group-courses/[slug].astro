@@ -49,6 +49,7 @@ const courseJsonLd = buildCourseJsonLd({
   image: new URL(`/og/${slug}-group.png`, Astro.site).toString(),
   price: currentPrice,
   schedule: group.schedule,
+  instructorName: instructor?.data.name,
   instructorTitle: instructor?.data.title,
   instructorOneLiner: instructor?.data.oneLiner,
 });
@@ -128,7 +129,11 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd([
       seatsLeft={group.seatsLeft}
       facts={facts}
       ctaHref={registerHref}
-      instructor={instructor ? { title: instructor.data.title, oneLiner: instructor.data.oneLiner } : undefined}
+      instructor={
+        instructor
+          ? { name: instructor.data.name, title: instructor.data.title, oneLiner: instructor.data.oneLiner }
+          : undefined
+      }
     />
   </div>
 

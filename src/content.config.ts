@@ -46,8 +46,10 @@ const courses = defineCollection({
 const instructors = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/instructors' }),
   schema: z.object({
-    // Internal only — never rendered anywhere on the site (privacy).
+    // Internal bookkeeping key, stable even if the file is renamed — not
+    // required reading anywhere, just a convenience.
     id: z.string(),
+    name: z.string(),
     title: z.string(),
     oneLiner: z.string(),
     facts: z.array(z.string()).length(3),
@@ -55,9 +57,6 @@ const instructors = defineCollection({
     // is instructor -> courses, not the other way around (see
     // getInstructorForCourse in src/lib/instructors.ts).
     courses: z.array(z.string()),
-    // No rendering behavior yet if this becomes true — see the TODO next to
-    // its only read, in src/components/InstructorSection.astro.
-    showIdentity: z.boolean().default(false),
   }),
 });
 

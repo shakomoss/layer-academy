@@ -36,7 +36,7 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd([
 
   <section class="container course-grid">
     {coursesWithInstructor.map(({ course, instructor }) => (
-      <CourseCard course={course} instructorTitle={instructor?.data.title} />
+      <CourseCard course={course} instructorName={instructor?.data.name} />
     ))}
   </section>
 </BaseLayout>

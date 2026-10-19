@@ -116,6 +116,7 @@ const faqJsonLd = buildFaqJsonLd(faqItems);
     <div class="lecturers-grid">
       {instructors.map(({ data, Content, programsLabel }) => (
         <div class="lecturer-block">
+          <p class="lecturer-name">{data.name}</p>
           <p class="lecturer-title">{data.title}</p>
           {programsLabel && <p class="lecturer-programs latin">{programsLabel}</p>}
           <InstructorFactTags facts={data.facts} />
@@ -309,9 +310,15 @@ const faqJsonLd = buildFaqJsonLd(faqItems);
     padding-top: 32px;
   }
 
-  .lecturer-title {
+  .lecturer-name {
     font-size: 22px;
     font-weight: 600;
+  }
+
+  .lecturer-title {
+    margin-top: 0.2rem;
+    font-size: 16px;
+    color: var(--color-muted);
   }
 
   .lecturer-programs {

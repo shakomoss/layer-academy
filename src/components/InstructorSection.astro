@@ -7,15 +7,12 @@ interface Props {
 }
 
 const { instructor } = Astro.props;
-const { title, facts } = instructor.data;
+const { name, title, facts } = instructor.data;
 const { Content } = await render(instructor);
-
-// TODO: if instructor.data.showIdentity is ever true, render the real
-// identity here (name, photo, links). Nothing extra renders yet — see the
-// privacy note in src/lib/instructors.ts and src/content.config.ts.
 ---
 <section class="instructor-section">
   <h2>ვინ გასწავლით</h2>
+  <p class="instructor-name">{name}</p>
   <p class="instructor-title">{title}</p>
   <InstructorFactTags facts={facts} />
   <div class="instructor-body">
@@ -33,10 +30,20 @@ const { Content } = await render(instructor);
     font-weight: 600;
   }
 
-  .instructor-title {
+  .instructor-name {
     margin-top: var(--space-2);
     font-size: 18px;
     font-weight: 600;
+  }
+
+  .instructor-title {
+    margin-top: 0.2rem;
+    font-size: 15px;
+    color: var(--color-muted);
+  }
+
+  .instructor-section :global(.fact-tags) {
+    margin-top: var(--space-2);
   }
 
   .instructor-body {

@@ -160,11 +160,17 @@ content:
     path: src/content/instructors
     format: yaml-frontmatter
     view:
-      primary: title
+      primary: name
     fields:
+      - name: name
+        label: "სახელი და გვარი"
+        description: "ჩანს საჯაროდ საიტზე."
+        type: string
+        required: true
+
       - name: title
         label: "წოდება / პროფესია"
-        description: "მაგ: არქიტექტორი, სამოქალაქო ინჟინერი. ეს ჩანს საჯაროდ — სახელის ნაცვლად."
+        description: "მაგ: არქიტექტორი, სამოქალაქო ინჟინერი."
         type: string
         required: true
 
@@ -200,15 +206,9 @@ content:
             - name: 3ds-max
               label: "3ds Max"
 
-      - name: showIdentity
-        label: "ვინაობის ჩვენება"
-        description: "ამჟამად გამორთულია საიტზე (სახელი, ფოტო და სხვა ვინაობის დეტალები არსად ჩანს). ჩართვას ამ ეტაპზე ეფექტი არ აქვს საიტზე — დეველოპერთან შეთანხმების გარეშე ნუ ჩართავთ."
-        type: boolean
-        default: false
-
       - name: body
         label: "სრული ბიოგრაფია (2 აბზაცი)"
-        description: "ჩანს კურსის გვერდზე, განყოფილებაში 'ვინ გასწავლით'. არ ჩაწეროთ სახელი, კომპანიის ან უნივერსიტეტის სახელი."
+        description: "ჩანს კურსის გვერდზე, განყოფილებაში 'ვინ გასწავლით'."
         type: rich-text
 
   - name: settings
