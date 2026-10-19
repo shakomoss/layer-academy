@@ -1,7 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import CourseCard from '../../components/CourseCard.astro';
+import CourseRow from '../../components/CourseRow.astro';
 import { buildBreadcrumbJsonLd } from '../../lib/structured-data';
 
 const courses = (await getCollection('courses', ({ data }) => data.published && data.group.enabled)).sort(
@@ -26,10 +26,13 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd([
     </p>
   </section>
 
-  <section class="container course-grid">
-    {courses.map((course) => (
-      <CourseCard course={course} variant="group" />
-    ))}
+  <section class="course-list">
+    <p class="list-note">ყველა კურსი ონლაინ ტარდება, ლექციების ჩანაწერებით.</p>
+    <div class="row-list">
+      {courses.map((course) => (
+        <CourseRow course={course} />
+      ))}
+    </div>
   </section>
 </BaseLayout>
 
@@ -43,10 +46,22 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd([
     margin-bottom: var(--space-2);
   }
 
-  .course-grid {
+  .course-list {
+    width: 100%;
+    max-width: 1160px;
+    margin: 0 auto;
+    padding-inline: var(--space-3);
     padding-block: var(--space-4) var(--space-6);
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 24px;
+  }
+
+  .list-note {
+    color: var(--color-muted);
+    font-size: 0.9rem;
+    margin-bottom: var(--space-2);
+  }
+
+  .row-list {
+    display: flex;
+    flex-direction: column;
   }
 </style>

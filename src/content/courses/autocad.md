@@ -9,7 +9,7 @@ group:
   price: 370
   earlyBirdPrice: 340
   earlyBirdUntil: '2026-10-15'
-  nextStartDate: '2026-10-26'
+  nextStartDate: '2026-10-25'
   schedule: კვირა, 18:00
 mentorship:
   enabled: true

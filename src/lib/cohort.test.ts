@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { formatEarlyBirdUntil, getCohortLabel, getCurrentPrice, isEarlyBirdActive } from './cohort';
+import { formatEarlyBirdUntil, getCohortLabel, getCurrentPrice, getShortCohortLabel, isEarlyBirdActive } from './cohort';
 
 // Helper: a UTC instant, used as the "now" passed into the utility. The utility
 // itself re-derives the Asia/Tbilisi (UTC+4) calendar date from this instant.
@@ -48,6 +48,28 @@ describe('getCohortLabel — nextStartDate override', () => {
   it('ignores an unset override date', () => {
     expect(getCohortLabel({ nextStartDate: undefined, now: utc('2026-10-01T10:00:00Z') })).toBe(
       'მიღება ნოემბრის ნაკადზე'
+    );
+  });
+});
+
+describe('getShortCohortLabel', () => {
+  it('is just the upcoming month (nominative) with no override set', () => {
+    expect(getShortCohortLabel({ now: utc('2026-10-15T10:00:00Z') })).toBe('ნოემბერი');
+  });
+
+  it('wraps December → January, nominative', () => {
+    expect(getShortCohortLabel({ now: utc('2026-12-20T10:00:00Z') })).toBe('იანვარი');
+  });
+
+  it('is "[day] [month]" while an override date is still upcoming', () => {
+    expect(getShortCohortLabel({ nextStartDate: '2026-10-25', now: utc('2026-10-01T10:00:00Z') })).toBe(
+      '25 ოქტომბერი'
+    );
+  });
+
+  it('falls back to the month name once the override date has passed', () => {
+    expect(getShortCohortLabel({ nextStartDate: '2026-10-25', now: utc('2026-10-26T10:00:00Z') })).toBe(
+      'ნოემბერი'
     );
   });
 });
