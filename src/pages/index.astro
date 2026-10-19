@@ -4,15 +4,14 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Wordmark from '../components/Wordmark.astro';
 import GroupCourseCard from '../components/GroupCourseCard.astro';
 import InstructorFactTags from '../components/InstructorFactTags.astro';
+import TwoWays from '../components/TwoWays.astro';
 import FAQ from '../components/FAQ.astro';
 import { buildFaqItems } from '../lib/faq';
-import { getCurrentPrice } from '../lib/cohort';
 import { buildEducationalOrganization, buildFaqJsonLd } from '../lib/structured-data';
 
 const groupCourses = (await getCollection('courses', ({ data }) => data.published && data.group.enabled)).sort(
   (a, b) => a.data.order - b.data.order
 );
-const mentorshipCourses = await getCollection('courses', ({ data }) => data.published && data.mentorship.enabled);
 
 const allCourses = await getCollection('courses', ({ data }) => data.published);
 const courseTitleBySlug = new Map(allCourses.map((c) => [c.data.slug, c.data.title]));
@@ -28,21 +27,6 @@ const instructors = await Promise.all(
     return { ...instructor, Content, programsLabel };
   })
 );
-
-const groupPrices = groupCourses.map(
-  (c) =>
-    getCurrentPrice({
-      price: c.data.group.price,
-      earlyBirdPrice: c.data.group.earlyBirdPrice,
-      earlyBirdUntil: c.data.group.earlyBirdUntil,
-    }).currentPrice
-);
-const groupPriceMin = Math.min(...groupPrices);
-const groupPriceMax = Math.max(...groupPrices);
-
-const mentorshipPrices = mentorshipCourses.map((c) => c.data.mentorship.monthlyPrice);
-const mentorshipPriceMin = Math.min(...mentorshipPrices);
-const mentorshipPriceMax = Math.max(...mentorshipPrices);
 
 const faqItems = buildFaqItems();
 const organizationJsonLd = buildEducationalOrganization(Astro.site?.toString() ?? '');
@@ -64,39 +48,7 @@ const faqJsonLd = buildFaqJsonLd(faqItems);
     </div>
   </section>
 
-  <section class="container ways-to-learn">
-    <h2>ორი გზა სასწავლებლად</h2>
-    <div class="ways-grid">
-      <article class="way-card">
-        <h3>ჯგუფური კურსები</h3>
-        <p>
-          ონლაინ ლაივ ლექციები მცირე ჯგუფში, ახალი ნაკადი ყოველთვიურად. ყველა ლექციის ჩანაწერი
-          გეგზავნებათ.
-        </p>
-        <div class="way-footer">
-          <p class="way-price-label">ფასი</p>
-          <p class="way-price">
-            <span class="num">{groupPriceMin}–{groupPriceMax}</span> <span class="lari">₾</span>
-          </p>
-          <a href="/group-courses/" class="way-cta">კურსების ნახვა →</a>
-        </div>
-      </article>
-      <article class="way-card">
-        <h3>ინდივიდუალური მენტორინგი</h3>
-        <p>
-          ყოველკვირეული 1:1 ონლაინ შეხვედრები, თქვენთვის მოსახერხებელ დროს. დაწყება ნებისმიერ დროს
-          შეგიძლიათ.
-        </p>
-        <div class="way-footer">
-          <p class="way-price-label">ფასი</p>
-          <p class="way-price">
-            <span class="num">{mentorshipPriceMin}–{mentorshipPriceMax}</span> <span class="lari">₾</span> / თვეში
-          </p>
-          <a href="/mentorship/" class="way-cta">პროგრამების ნახვა →</a>
-        </div>
-      </article>
-    </div>
-  </section>
+  <TwoWays />
 
   <section class="group-courses-preview">
     <div class="group-courses-header">
@@ -185,7 +137,6 @@ const faqJsonLd = buildFaqJsonLd(faqItems);
     justify-content: center;
   }
 
-  .ways-to-learn,
   .group-courses-preview,
   .how-it-works,
   .lecturers,
@@ -194,22 +145,10 @@ const faqJsonLd = buildFaqJsonLd(faqItems);
     padding-block: var(--space-5);
   }
 
-  .ways-to-learn h2,
   .how-it-works h2,
   .faq h2,
   .final-cta h2 {
     margin-bottom: var(--space-3);
-  }
-
-  .ways-grid {
-    display: grid;
-    gap: var(--space-3);
-  }
-
-  @media (min-width: 640px) {
-    .ways-grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
   }
 
   .group-courses-header,
@@ -253,62 +192,6 @@ const faqJsonLd = buildFaqJsonLd(faqItems);
   .instructor-card {
     border: 1px solid var(--color-divider);
     padding: var(--space-3);
-  }
-
-  .way-card {
-    border: 1px solid var(--color-divider);
-    padding: 36px 32px;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .way-card h3 {
-    font-size: 24px;
-    font-weight: 600;
-    margin-bottom: var(--space-2);
-  }
-
-  .way-card p {
-    font-size: 17px;
-    line-height: 1.7;
-    color: #55514a;
-  }
-
-  .way-footer {
-    margin-top: auto;
-    padding-top: var(--space-3);
-  }
-
-  .way-price-label {
-    font-size: 14px;
-    color: var(--color-muted);
-  }
-
-  .way-price {
-    margin-top: 0.2rem;
-    font-size: 24px;
-    font-weight: 600;
-    font-family: var(--font-georgian);
-  }
-
-  .way-price .num {
-    font-family: var(--font-latin);
-  }
-
-  .way-price .lari {
-    font-family: var(--font-georgian);
-  }
-
-  .way-cta {
-    display: inline-flex;
-    align-items: center;
-    margin-top: 20px;
-    background: #1c1b19;
-    color: #f7f5f0;
-    font-size: 16px;
-    padding: 14px 22px;
-    text-decoration: none;
-    white-space: nowrap;
   }
 
   .steps {

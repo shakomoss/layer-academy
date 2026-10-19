@@ -1,0 +1,65 @@
+---
+import { getCollection } from 'astro:content';
+import { getCurrentPrice } from '../lib/cohort';
+
+const groupCourses = await getCollection('courses', ({ data }) => data.published && data.group.enabled);
+const mentorshipCourses = await getCollection('courses', ({ data }) => data.published && data.mentorship.enabled);
+
+const range = (prices: number[]) => `${Math.min(...prices)}–${Math.max(...prices)}`;
+
+const groupPrices = groupCourses.map(
+  (c) =>
+    getCurrentPrice({
+      price: c.data.group.price,
+      earlyBirdPrice: c.data.group.earlyBirdPrice,
+      earlyBirdUntil: c.data.group.earlyBirdUntil,
+    }).currentPrice
+);
+const mentorshipPrices = mentorshipCourses.map((c) => c.data.mentorship.monthlyPrice);
+
+const groupRange = range(groupPrices);
+const mentorRange = range(mentorshipPrices);
+---
+<section class="two-ways">
+  <h2>ორი გზა სასწავლებლად</h2>
+  <div class="grid">
+    <a class="card" href="/group-courses/">
+      <h3>ჯგუფური კურსები</h3>
+      <p>ონლაინ ლაივ ლექციები მცირე ჯგუფში, ახალი ნაკადი ყოველთვიურად. ყველა ლექციის ჩანაწერი გეგზავნებათ.</p>
+      <div class="foot">
+        <div class="price"><span class="label">ფასი</span><span class="val">{groupRange} ₾</span></div>
+        <span class="btn">კურსების ნახვა →</span>
+      </div>
+    </a>
+    <a class="card" href="/mentorship/">
+      <h3>ინდივიდუალური მენტორინგი</h3>
+      <p>ყოველკვირეული 1:1 ონლაინ შეხვედრები, თქვენთვის მოსახერხებელ დროს. დაწყება ნებისმიერ დროს შეგიძლიათ.</p>
+      <div class="foot">
+        <div class="price"><span class="label">ფასი</span><span class="val">{mentorRange} ₾ <small>/ თვეში</small></span></div>
+        <span class="btn">პროგრამების ნახვა →</span>
+      </div>
+    </a>
+  </div>
+</section>
+
+<style>
+  .two-ways { max-width: 1160px; margin: 0 auto; padding: 64px 40px; }
+  h2 { font-size: 32px; font-weight: 600; margin: 0 0 32px; }
+  .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; align-items: stretch; }
+  .card { display: flex; flex-direction: column; border: 1px solid #CFCAC0; padding: 36px 32px 32px;
+          color: #1C1B19; text-decoration: none; transition: border-color .2s; }
+  .card:hover { border-color: #1C1B19; }
+  h3 { font-size: 24px; font-weight: 600; margin: 0 0 14px; }
+  p { font-size: 17px; line-height: 1.7; color: #55514A; margin: 0 0 32px; }
+  .foot { margin-top: auto; display: flex; align-items: flex-end; justify-content: space-between; gap: 16px;
+          padding-top: 24px; border-top: 1px solid #E2DED5; }
+  .price { display: flex; flex-direction: column; gap: 4px; }
+  .label { font-size: 14px; color: #7E7A72; }
+  .val { font-family: 'Noto Sans Georgian', sans-serif; font-size: 26px; font-weight: 600; white-space: nowrap; }
+  .val small { font-size: 16px; font-weight: 400; color: #55514A; }
+  .btn { background: #1C1B19; color: #F7F5F0; font-size: 16px; font-weight: 500; padding: 14px 22px; white-space: nowrap; }
+  @media (max-width: 760px) {
+    .grid { grid-template-columns: 1fr; }
+    .foot { flex-direction: column; align-items: flex-start; }
+  }
+</style>
