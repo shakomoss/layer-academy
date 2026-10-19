@@ -2,6 +2,7 @@
 import type { CollectionEntry } from 'astro:content';
 import CohortLabel from './CohortLabel.astro';
 import PriceBox from './PriceBox.astro';
+import { getCurrentPrice } from '../lib/cohort';
 
 interface Props {
   course: CollectionEntry<'courses'>;
@@ -12,30 +13,54 @@ interface Props {
 const { course, variant, instructorName } = Astro.props;
 const { title, slug, group, mentorship } = course.data;
 const href = variant === 'group' ? `/group-courses/${slug}/` : `/mentorship/${slug}/`;
+
+const currentPrice =
+  variant === 'group'
+    ? getCurrentPrice({ price: group.price, earlyBirdPrice: group.earlyBirdPrice, earlyBirdUntil: group.earlyBirdUntil })
+        .currentPrice
+    : 0;
 ---
-<article class="course-card">
-  <h3 class="latin">{title}</h3>
+{variant === 'group' ? (
+  <a href={href} class="course-card" aria-label={`${title} — კურსის ნახვა`}>
+    <h3 class="latin">{title}</h3>
+    <p class="card-subtitle">საფუძვლები · დამწყებთათვის</p>
 
-  {variant === 'group' ? (
-    <>
-      <CohortLabel nextStartDate={group.nextStartDate} as="p" />
-      <p class="course-schedule">{group.schedule || 'განრიგი მალე დაზუსტდება'}</p>
-      <PriceBox price={group.price} earlyBirdPrice={group.earlyBirdPrice} earlyBirdUntil={group.earlyBirdUntil} />
-    </>
-  ) : (
-    <>
-      {instructorName && <p class="course-mentor">{instructorName}</p>}
-      <PriceBox price={mentorship.monthlyPrice} suffix=" / თვეში" />
-    </>
-  )}
+    <hr class="card-rule" />
 
-  <a href={href} class="btn btn-secondary course-link">
-    {variant === 'group' ? 'კურსის ნახვა' : 'პროგრამის ნახვა'}
+    <dl class="card-facts">
+      <div class="fact-row">
+        <dt>დაწყება</dt>
+        <dd><CohortLabel nextStartDate={group.nextStartDate} /></dd>
+      </div>
+      <div class="fact-row">
+        <dt>განრიგი</dt>
+        <dd>{group.schedule || 'მალე დაზუსტდება'}</dd>
+      </div>
+      <div class="fact-row">
+        <dt>ფორმატი</dt>
+        <dd>ონლაინ</dd>
+      </div>
+    </dl>
+
+    <hr class="card-rule" />
+
+    <div class="card-footer">
+      <p class="card-price"><span class="num">{currentPrice}</span> <span class="lari">₾</span></p>
+      <span class="card-cta">კურსის ნახვა →</span>
+    </div>
   </a>
-</article>
+) : (
+  <article class="course-card course-card-mentorship">
+    <h3 class="latin">{title}</h3>
+    {instructorName && <p class="course-mentor">{instructorName}</p>}
+    <PriceBox price={mentorship.monthlyPrice} suffix=" / თვეში" />
+    <a href={href} class="btn btn-secondary course-link">პროგრამის ნახვა</a>
+  </article>
+)}
 
 <style>
-  .course-card {
+  /* Shared mentorship-card styles (unchanged from before the group-card redesign) */
+  .course-card-mentorship {
     border: 1px solid var(--color-divider);
     padding: var(--space-3);
     display: flex;
@@ -43,14 +68,13 @@ const href = variant === 'group' ? `/group-courses/${slug}/` : `/mentorship/${sl
     gap: 0.5rem;
   }
 
-  .course-card h3 {
+  .course-card-mentorship h3 {
     font-size: 1.4rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     font-weight: 300;
   }
 
-  .course-schedule,
   .course-mentor {
     color: var(--color-muted);
     font-size: 0.9rem;
@@ -59,5 +83,100 @@ const href = variant === 'group' ? `/group-courses/${slug}/` : `/mentorship/${sl
   .course-link {
     margin-top: var(--space-2);
     align-self: flex-start;
+  }
+
+  /* Group course card */
+  a.course-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    border: 1px solid var(--color-divider);
+    padding: var(--space-3);
+    text-decoration: none;
+    color: var(--color-ink);
+    transition: transform 0.15s ease, border-color 0.15s ease;
+  }
+
+  a.course-card:hover,
+  a.course-card:focus-visible {
+    border-color: var(--color-ink);
+    transform: translateY(-2px);
+  }
+
+  a.course-card h3 {
+    font-family: var(--font-latin);
+    font-size: 30px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 300;
+  }
+
+  .card-subtitle {
+    margin-top: 0.4rem;
+    color: var(--color-muted);
+    font-size: 0.9rem;
+  }
+
+  .card-rule {
+    border: none;
+    border-top: 1px solid var(--color-divider);
+    margin: var(--space-2) 0;
+  }
+
+  .card-facts {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .fact-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-2);
+    font-size: 0.9rem;
+  }
+
+  .fact-row dt {
+    color: var(--color-muted);
+  }
+
+  .fact-row dd {
+    margin: 0;
+    text-align: right;
+  }
+
+  .card-footer {
+    margin-top: auto;
+    padding-top: var(--space-2);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+  }
+
+  .card-price {
+    margin: 0;
+    font-size: 36px;
+    font-weight: 600;
+  }
+
+  .card-price .num {
+    font-family: var(--font-latin);
+  }
+
+  .card-price .lari {
+    font-family: var(--font-georgian);
+  }
+
+  .card-cta {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0.7rem 1.1rem;
+    background: #1c1b19;
+    color: #f7f5f0;
+    font-size: 0.9rem;
+    white-space: nowrap;
   }
 </style>
