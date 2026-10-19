@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { formatEarlyBirdUntil, getCohortLabel, getCurrentPrice, getShortCohortLabel, isEarlyBirdActive } from './cohort';
+import {
+  formatEarlyBirdUntil,
+  getCohortLabel,
+  getCohortStartFact,
+  getCurrentPrice,
+  isEarlyBirdActive,
+} from './cohort';
 
 // Helper: a UTC instant, used as the "now" passed into the utility. The utility
 // itself re-derives the Asia/Tbilisi (UTC+4) calendar date from this instant.
@@ -52,24 +58,30 @@ describe('getCohortLabel — nextStartDate override', () => {
   });
 });
 
-describe('getShortCohortLabel', () => {
-  it('is just the upcoming month (nominative) with no override set', () => {
-    expect(getShortCohortLabel({ now: utc('2026-10-15T10:00:00Z') })).toBe('ნოემბერი');
+describe('getCohortStartFact', () => {
+  it('is "[month genitive] ნაკადი" with no override set', () => {
+    expect(getCohortStartFact({ now: utc('2026-10-15T10:00:00Z') })).toBe('ნოემბრის ნაკადი');
   });
 
-  it('wraps December → January, nominative', () => {
-    expect(getShortCohortLabel({ now: utc('2026-12-20T10:00:00Z') })).toBe('იანვარი');
+  it('wraps December → January, genitive', () => {
+    expect(getCohortStartFact({ now: utc('2026-12-20T10:00:00Z') })).toBe('იანვრის ნაკადი');
   });
 
-  it('is "[day] [month]" while an override date is still upcoming', () => {
-    expect(getShortCohortLabel({ nextStartDate: '2026-10-25', now: utc('2026-10-01T10:00:00Z') })).toBe(
-      '25 ოქტომბერი'
+  it('is "იწყება [day] [month dative]" while an override date is still upcoming', () => {
+    expect(getCohortStartFact({ nextStartDate: '2026-10-25', now: utc('2026-10-01T10:00:00Z') })).toBe(
+      'იწყება 25 ოქტომბერს'
     );
   });
 
-  it('falls back to the month name once the override date has passed', () => {
-    expect(getShortCohortLabel({ nextStartDate: '2026-10-25', now: utc('2026-10-26T10:00:00Z') })).toBe(
-      'ნოემბერი'
+  it('still shows the override on the start date itself', () => {
+    expect(getCohortStartFact({ nextStartDate: '2026-10-25', now: utc('2026-10-25T06:00:00Z') })).toBe(
+      'იწყება 25 ოქტომბერს'
+    );
+  });
+
+  it('falls back to the genitive cohort phrase once the override date has passed', () => {
+    expect(getCohortStartFact({ nextStartDate: '2026-10-25', now: utc('2026-10-26T10:00:00Z') })).toBe(
+      'ნოემბრის ნაკადი'
     );
   });
 });

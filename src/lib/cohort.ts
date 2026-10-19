@@ -1,4 +1,4 @@
-import { MONTHS_GENITIVE, MONTHS_NOMINATIVE } from './months';
+import { MONTHS_DATIVE, MONTHS_GENITIVE, MONTHS_NOMINATIVE } from './months';
 
 const TIMEZONE = 'Asia/Tbilisi';
 
@@ -85,15 +85,21 @@ export function getCohortLabel(input: CohortLabelInput): string {
 }
 
 /**
- * Short form for compact layouts (e.g. a table row) where the surrounding
- * UI already supplies a "დაწყება" label: "25 ოქტომბერი" when an override
- * date is active, otherwise just the upcoming month's nominative name
- * ("ნოემბერი") — no "მიღება .../ნაკადზე" sentence.
+ * Phrase form for a compact fact row with a calendar icon doing the "this is
+ * about the start date" work instead of a text label: "იწყება 25 ოქტომბერს"
+ * (dative) when an override date is active, otherwise "ნოემბრის ნაკადი"
+ * (genitive + "ნაკადი") for the upcoming month's cohort.
  */
-export function getShortCohortLabel(input: CohortLabelInput): string {
+export function getCohortStartFact(input: CohortLabelInput): string {
   const resolved = resolveNextStart(input);
-  const monthName = MONTHS_NOMINATIVE[resolved.month1to12 - 1];
-  return resolved.override ? `${resolved.day} ${monthName}` : monthName;
+
+  if (resolved.override) {
+    const monthName = MONTHS_DATIVE[resolved.month1to12 - 1];
+    return `იწყება ${resolved.day} ${monthName}`;
+  }
+
+  const monthName = MONTHS_GENITIVE[resolved.month1to12 - 1];
+  return `${monthName} ნაკადი`;
 }
 
 export interface EarlyBirdInput {
