@@ -69,8 +69,8 @@ const faqJsonLd = buildFaqJsonLd(faqItems);
           <path d="M3.5 19c0-2.8 2.2-5 5-5s5 2.2 5 5" />
           <path d="M14.3 14.3c2.2.3 3.7 2.1 3.7 4.7" />
         </svg>
-        <p class="fact-label">ჯგუფის ზომა</p>
-        <p class="fact-value">მცირე ჯგუფები</p>
+        <p class="fact-label">ჯგუფი</p>
+        <p class="fact-value">მცირე</p>
       </div>
       <div class="hero-fact">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
@@ -78,7 +78,7 @@ const faqJsonLd = buildFaqJsonLd(faqItems);
           <path d="M9 13.5 7 20l5-2.5 5 2.5-2-6.5" />
         </svg>
         <p class="fact-label">სერტიფიკატი</p>
-        <p class="fact-value">კურსის დასრულებისას</p>
+        <p class="fact-value">გაიცემა</p>
       </div>
       <div class="hero-fact">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
@@ -86,7 +86,7 @@ const faqJsonLd = buildFaqJsonLd(faqItems);
           <path d="M10 10l4 2.5-4 2.5z" />
         </svg>
         <p class="fact-label">ბონუსი</p>
-        <p class="fact-value">ლექციების ჩანაწერები</p>
+        <p class="fact-value">ჩანაწერები</p>
       </div>
     </div>
   </section>
@@ -191,8 +191,8 @@ const faqJsonLd = buildFaqJsonLd(faqItems);
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 10px;
-    padding: 28px 16px;
+    gap: 8px;
+    padding: 32px 16px;
   }
 
   .hero-fact:not(:first-child) {
@@ -202,6 +202,7 @@ const faqJsonLd = buildFaqJsonLd(faqItems);
   .hero-fact svg {
     width: 24px;
     height: 24px;
+    margin-bottom: 6px;
     color: var(--color-ink);
   }
 
@@ -211,15 +212,9 @@ const faqJsonLd = buildFaqJsonLd(faqItems);
   }
 
   .hero-fact .fact-value {
-    font-size: 18px;
+    font-size: 19px;
     font-weight: 600;
-    color: #1c1b19;
-  }
-
-  @media (min-width: 1024px) {
-    .hero-fact .fact-value {
-      white-space: nowrap;
-    }
+    white-space: nowrap;
   }
 
   @media (max-width: 1023px) {
