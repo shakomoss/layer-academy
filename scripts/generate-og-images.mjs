@@ -61,7 +61,9 @@ function render(svg, outPath) {
 
 function readFrontmatter(filePath) {
   const raw = fs.readFileSync(filePath, 'utf8');
-  const match = raw.match(/^---\n([\s\S]*?)\n---/);
+  // \r? throughout: Pages CMS writes files via GitHub's API with CRLF line
+  // endings, while files written directly in this repo use LF — handle both.
+  const match = raw.match(/^---\r?\n([\s\S]*?)\r?\n---/);
   return yaml.load(match[1]);
 }
 
