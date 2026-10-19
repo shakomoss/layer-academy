@@ -14,7 +14,6 @@ group:
 mentorship:
   enabled: true
   monthlyPrice: 690
-instructor: giorgi-janikashvili
 syllabus:
   topics:
     - AutoCAD-ის ინტერფეისს და სამუშაო გარემოს

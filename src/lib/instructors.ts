@@ -1,18 +1,11 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
 
 /**
- * `course.instructor` is a free-text id written either by hand (bare slug,
- * e.g. "giorgi-mamaladze") or by the Pages CMS admin panel, which may store
- * a path with a folder prefix and/or a .md extension. Normalize both forms
- * before matching against the instructors collection.
+ * Looks up the instructor for a course/mentorship page by matching the
+ * page's slug against that instructor's `courses` list — the ownership
+ * direction is instructor -> courses, not a field on the course itself.
  */
-function normalizeId(id: string): string {
-  const lastSegment = id.split('/').pop() ?? id;
-  return lastSegment.replace(/\.md$/, '');
-}
-
-export async function resolveInstructor(id: string): Promise<CollectionEntry<'instructors'> | undefined> {
+export async function getInstructorForCourse(slug: string): Promise<CollectionEntry<'instructors'> | undefined> {
   const instructors = await getCollection('instructors');
-  const target = normalizeId(id);
-  return instructors.find((entry) => normalizeId(entry.id) === target);
+  return instructors.find((entry) => entry.data.courses.includes(slug));
 }

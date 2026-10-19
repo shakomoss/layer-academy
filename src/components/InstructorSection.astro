@@ -1,0 +1,53 @@
+---
+import { render, type CollectionEntry } from 'astro:content';
+import InstructorFactTags from './InstructorFactTags.astro';
+
+interface Props {
+  instructor: CollectionEntry<'instructors'>;
+}
+
+const { instructor } = Astro.props;
+const { title, facts } = instructor.data;
+const { Content } = await render(instructor);
+
+// TODO: if instructor.data.showIdentity is ever true, render the real
+// identity here (name, photo, links). Nothing extra renders yet — see the
+// privacy note in src/lib/instructors.ts and src/content.config.ts.
+---
+<section class="instructor-section">
+  <h2>ვინ გასწავლით</h2>
+  <p class="instructor-title">{title}</p>
+  <InstructorFactTags facts={facts} />
+  <div class="instructor-body">
+    <Content />
+  </div>
+</section>
+
+<style>
+  .instructor-section {
+    margin-block: var(--space-5);
+  }
+
+  .instructor-section h2 {
+    font-size: 24px;
+    font-weight: 600;
+  }
+
+  .instructor-title {
+    margin-top: var(--space-2);
+    font-size: 18px;
+    font-weight: 600;
+  }
+
+  .instructor-body {
+    margin-top: var(--space-3);
+  }
+
+  .instructor-body :global(p) {
+    margin-top: var(--space-2);
+  }
+
+  .instructor-body :global(p:first-child) {
+    margin-top: 0;
+  }
+</style>

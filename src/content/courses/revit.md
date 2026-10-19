@@ -10,7 +10,6 @@ group:
 mentorship:
   enabled: true
   monthlyPrice: 1190
-instructor: giorgi-janikashvili
 syllabus:
   topics:
     - Revit-ის ინტერფეისს და პროგრამის ძირითად პრინციპებს

@@ -1,6 +1,13 @@
 ---
 import PriceDisplay from './PriceDisplay.astro';
 import FactRows, { type FactRow } from './FactRows.astro';
+import InstructorFactTags from './InstructorFactTags.astro';
+
+interface SidebarInstructor {
+  title: string;
+  oneLiner: string;
+  facts?: string[];
+}
 
 interface Props {
   price: number;
@@ -11,6 +18,7 @@ interface Props {
   facts: FactRow[];
   ctaHref: string;
   ctaLabel?: string;
+  instructor?: SidebarInstructor;
 }
 
 const {
@@ -22,6 +30,7 @@ const {
   facts,
   ctaHref,
   ctaLabel = 'დარეგისტრირდით',
+  instructor,
 } = Astro.props;
 ---
 <aside class="course-sidebar">
@@ -33,6 +42,16 @@ const {
   <FactRows facts={facts} />
 
   <a href={ctaHref} class="btn btn-primary sidebar-cta">{ctaLabel}</a>
+
+  {instructor && (
+    <>
+      <hr class="sidebar-rule" />
+      <p class="sidebar-instructor-label">ლექტორი</p>
+      <p class="sidebar-instructor-title">{instructor.title}</p>
+      <p class="sidebar-instructor-oneliner">{instructor.oneLiner}</p>
+      {instructor.facts && <InstructorFactTags facts={instructor.facts} />}
+    </>
+  )}
 </aside>
 
 <style>
@@ -68,5 +87,28 @@ const {
     min-height: 56px;
     margin-top: 24px;
     justify-content: center;
+  }
+
+  .sidebar-instructor-label {
+    margin: 0;
+    font-size: 13px;
+    color: var(--color-muted);
+  }
+
+  .sidebar-instructor-title {
+    margin: 0.3rem 0 0;
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  .sidebar-instructor-oneliner {
+    margin: 0.4rem 0 0;
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--color-muted);
+  }
+
+  .sidebar-instructor-oneliner + :global(.fact-tags) {
+    margin-top: 0.6rem;
   }
 </style>

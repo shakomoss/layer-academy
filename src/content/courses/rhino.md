@@ -10,7 +10,6 @@ group:
 mentorship:
   enabled: true
   monthlyPrice: 1390
-instructor: giorgi-janikashvili
 syllabus:
   topics:
     - Rhino-ის ინტერფეისს და სამუშაო გარემოს

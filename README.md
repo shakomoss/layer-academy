@@ -17,15 +17,21 @@ The site is static HTML — there is no database and no server to maintain. [Ast
 ## 2. Editing content in Pages CMS
 
 1. Go to [pagescms.org](https://pagescms.org) and sign in with the GitHub account that has access to this repository (see section 6 for first-time setup).
-2. Select this repository. You'll see three sections in the sidebar: **კურსები** (courses), **ინსტრუქტორები** (instructors), **ზოგადი პარამეტრები** (settings).
+2. Select this repository. You'll see three sections in the sidebar: **კურსები** (courses), **ლექტორები** (lecturers), **ზოგადი პარამეტრები** (settings).
 3. Click into any item, change the field you need, and click **Save**. Every field has a short Georgian explanation under its label.
 4. Saving triggers a rebuild automatically. The live site updates in roughly 1–2 minutes — refresh the page to see your change.
 
 ### What you can edit without touching code
 
-- **Courses** (`კურსები`): price, early-bird price and its expiry date, next start date, schedule text, duration, seats left, instructor, goal/outcome text, syllabus (either lesson-by-lesson or a flat topic list — see below), SEO title/description, published on/off.
-- **Instructors** (`ინსტრუქტორები`): name, role, bio, LinkedIn link.
+- **Courses** (`კურსები`): price, early-bird price and its expiry date, next start date, schedule text, duration, seats left, goal/outcome text, syllabus (either lesson-by-lesson or a flat topic list — see below), SEO title/description, published on/off.
+- **Lecturers** (`ლექტორები`): title/profession, one-line summary, exactly 3 short credential tags, which courses they teach (a multi-select — this is what decides who shows up on each course/mentorship page, not a field on the course itself), and the full 2-paragraph bio. See section 2.1 for the privacy design behind this.
 - **Settings** (`ზოგადი პარამეტრები`): phone, email, WhatsApp/Messenger/Instagram/Facebook links, the email address that receives registrations, the Meta domain verification code, and an optional announcement bar.
+
+### 2.1 Lecturer privacy, by design
+
+Lecturers are intentionally anonymous on this site — no names, photos, company names, university names, or LinkedIn links anywhere (not in page content, meta tags, OG tags, or the JSON-LD that search engines read). What shows instead is a profession/title ("არქიტექტორი, სამოქალაქო ინჟინერი"), a one-line summary, 3 short credential tags, and a full bio written in the third person without naming anyone. This isn't a limitation of the CMS — it's a deliberate choice, so **don't add a name or photo field yourself** without checking first, since nothing on the site is built to show one.
+
+There's a `showIdentity` toggle on each lecturer for if this policy ever changes — switching it on doesn't currently do anything (no code reads it for rendering yet), so leave it off unless you're coordinating a real change with a developer.
 
 ### Syllabus: two formats, pick one per course
 
@@ -228,7 +234,7 @@ npx wrangler pages dev ./dist
 
 These were intentionally left for the owner to fill in, since the brief says never to invent facts:
 
-- **Instructor bios** — both instructors (გიორგი ჯანიკაშვილი, გიორგი მამალაძე) have an empty bio field. The site correctly shows just name/role until filled in — give me their real background (years of experience, where they've worked/taught, notable projects) and I'll write the bios from that; I won't invent credentials for real people.
+- **Lecturer bios** — both are now filled in and live (title, one-liner, 3 credential tags, full bio), intentionally anonymous per the privacy design in section 2.1. Nothing left to fill in here unless you want to add a third lecturer or change what an existing one teaches, both doable in Pages CMS.
 - **Contact details** (`ზოგადი პარამეტრები` in Pages CMS) — phone, email, WhatsApp/Messenger/Instagram/Facebook links, and the registration notification email are all empty. The site hides each one until set, but the notification email in particular needs to be filled in before real registrations start arriving (see section 9).
 - **Schedules** for Revit, Rhino, and 3ds Max group courses — left as "TBA" per the brief (the site shows "schedule to be confirmed soon" automatically). Fill in via the `group.schedule` field once decided.
 - **3ds Max syllabus** — left empty per the brief (shows "syllabus coming soon" automatically). Add via `syllabus.topics` in Pages CMS once ready.

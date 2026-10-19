@@ -12,7 +12,6 @@ group:
 mentorship:
   enabled: true
   monthlyPrice: 790
-instructor: giorgi-mamaladze
 seoTitle: 3ds Max-ის საფუძვლების კურსი დამწყებთათვის
 seoDescription: >
   გსურთ 3D გრაფიკის შესწავლა? 3ds Max-ის კურსი დამწყებთათვის დაგეხმარებათ

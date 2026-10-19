@@ -2,7 +2,7 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import CourseCard from '../../components/CourseCard.astro';
-import { resolveInstructor } from '../../lib/instructors';
+import { getInstructorForCourse } from '../../lib/instructors';
 import { buildBreadcrumbJsonLd } from '../../lib/structured-data';
 
 const courses = (await getCollection('courses', ({ data }) => data.published && data.mentorship.enabled)).sort(
@@ -12,7 +12,7 @@ const courses = (await getCollection('courses', ({ data }) => data.published && 
 const coursesWithInstructor = await Promise.all(
   courses.map(async (course) => ({
     course,
-    instructor: await resolveInstructor(course.data.instructor),
+    instructor: await getInstructorForCourse(course.data.slug),
   }))
 );
 
@@ -36,7 +36,7 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd([
 
   <section class="container course-grid">
     {coursesWithInstructor.map(({ course, instructor }) => (
-      <CourseCard course={course} variant="mentorship" instructorName={instructor?.data.name} />
+      <CourseCard course={course} instructorTitle={instructor?.data.title} />
     ))}
   </section>
 </BaseLayout>

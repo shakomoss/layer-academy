@@ -1,8 +1,9 @@
 ---
-import { getCollection } from 'astro:content';
+import { getCollection, render } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Wordmark from '../components/Wordmark.astro';
 import GroupCourseCard from '../components/GroupCourseCard.astro';
+import InstructorFactTags from '../components/InstructorFactTags.astro';
 import FAQ from '../components/FAQ.astro';
 import { buildFaqItems } from '../lib/faq';
 import { getCurrentPrice } from '../lib/cohort';
@@ -12,7 +13,21 @@ const groupCourses = (await getCollection('courses', ({ data }) => data.publishe
   (a, b) => a.data.order - b.data.order
 );
 const mentorshipCourses = await getCollection('courses', ({ data }) => data.published && data.mentorship.enabled);
-const instructors = await getCollection('instructors');
+
+const allCourses = await getCollection('courses', ({ data }) => data.published);
+const courseTitleBySlug = new Map(allCourses.map((c) => [c.data.slug, c.data.title]));
+
+const instructors = await Promise.all(
+  (await getCollection('instructors')).map(async (instructor) => {
+    const { Content } = await render(instructor);
+    const programsLabel = instructor.data.courses
+      .map((slug) => courseTitleBySlug.get(slug))
+      .filter((title): title is string => Boolean(title))
+      .map((title) => title.toUpperCase())
+      .join(' · ');
+    return { ...instructor, Content, programsLabel };
+  })
+);
 
 const fromGroupPrice = Math.min(
   ...groupCourses.map((c) => getCurrentPrice({ price: c.data.group.price, earlyBirdPrice: c.data.group.earlyBirdPrice, earlyBirdUntil: c.data.group.earlyBirdUntil }).currentPrice)
@@ -93,14 +108,20 @@ const faqJsonLd = buildFaqJsonLd(faqItems);
     </ol>
   </section>
 
-  <section class="container instructors">
-    <h2>ინსტრუქტორები</h2>
-    <div class="instructors-grid">
-      {instructors.map((instructor) => (
-        <div class="instructor-card">
-          <p class="instructor-name">{instructor.data.name}</p>
-          <p class="instructor-role">{instructor.data.role}</p>
-          {instructor.data.bio && <p class="instructor-text">{instructor.data.bio}</p>}
+  <section class="lecturers">
+    <div class="lecturers-header">
+      <h2>ლექტორები</h2>
+      <p>ყველა ლექტორი პრაქტიკოსია და დარგში ყოველდღე მუშაობს.</p>
+    </div>
+    <div class="lecturers-grid">
+      {instructors.map(({ data, Content, programsLabel }) => (
+        <div class="lecturer-block">
+          <p class="lecturer-title">{data.title}</p>
+          {programsLabel && <p class="lecturer-programs latin">{programsLabel}</p>}
+          <InstructorFactTags facts={data.facts} />
+          <div class="lecturer-body">
+            <Content />
+          </div>
         </div>
       ))}
     </div>
@@ -146,7 +167,7 @@ const faqJsonLd = buildFaqJsonLd(faqItems);
   .ways-to-learn,
   .group-courses-preview,
   .how-it-works,
-  .instructors,
+  .lecturers,
   .faq,
   .final-cta {
     padding-block: var(--space-5);
@@ -154,21 +175,18 @@ const faqJsonLd = buildFaqJsonLd(faqItems);
 
   .ways-to-learn h2,
   .how-it-works h2,
-  .instructors h2,
   .faq h2,
   .final-cta h2 {
     margin-bottom: var(--space-3);
   }
 
-  .ways-grid,
-  .instructors-grid {
+  .ways-grid {
     display: grid;
     gap: var(--space-3);
   }
 
   @media (min-width: 640px) {
-    .ways-grid,
-    .instructors-grid {
+    .ways-grid {
       grid-template-columns: repeat(2, 1fr);
     }
   }
@@ -252,19 +270,75 @@ const faqJsonLd = buildFaqJsonLd(faqItems);
     margin-bottom: 0.4rem;
   }
 
-  .instructor-name {
-    font-weight: 500;
-    font-size: 1.1rem;
+  .lecturers-header {
+    width: 100%;
+    max-width: 1160px;
+    margin-inline: auto;
+    padding-inline: var(--space-3);
   }
 
-  .instructor-role {
+  .lecturers-header h2 {
+    font-size: 32px;
+    font-weight: 600;
+  }
+
+  .lecturers-header p {
+    margin-top: var(--space-2);
+    font-size: 17px;
     color: var(--color-muted);
-    font-size: 0.9rem;
-    margin-top: 0.2rem;
   }
 
-  .instructor-text {
+  .lecturers-grid {
+    width: 100%;
+    max-width: 1160px;
+    margin-inline: auto;
+    padding-inline: var(--space-3);
+    margin-top: var(--space-4);
+    display: grid;
+    gap: 48px;
+  }
+
+  @media (min-width: 900px) {
+    .lecturers-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .lecturer-block {
+    border-top: 1px solid var(--color-divider);
+    padding-top: 32px;
+  }
+
+  .lecturer-title {
+    font-size: 22px;
+    font-weight: 600;
+  }
+
+  .lecturer-programs {
     margin-top: 0.5rem;
+    font-size: 14px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+
+  .lecturer-block :global(.fact-tags) {
+    margin-top: var(--space-2);
+  }
+
+  .lecturer-body {
+    margin-top: var(--space-3);
+    max-width: 60ch;
+  }
+
+  .lecturer-body :global(p) {
+    font-size: 17px;
+    line-height: 1.7;
+    margin-top: var(--space-2);
+  }
+
+  .lecturer-body :global(p:first-child) {
+    margin-top: 0;
   }
 
   .final-cta {

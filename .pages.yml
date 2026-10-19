@@ -105,16 +105,6 @@ content:
             type: number
             required: true
 
-      - name: instructor
-        label: "ინსტრუქტორი / მენტორი"
-        description: "აირჩიეთ ინსტრუქტორი სიიდან."
-        type: reference
-        options:
-          collection: instructors
-          search: "name"
-          value: "{path}"
-          label: "{primary}"
-
       - name: goal
         label: "კურსის მიზანი"
         description: "არასავალდებულო. ერთი ან ორი წინადადება."
@@ -165,28 +155,61 @@ content:
         type: text
 
   - name: instructors
-    label: "ინსტრუქტორები"
+    label: "ლექტორები"
     type: collection
     path: src/content/instructors
     format: yaml-frontmatter
     view:
-      primary: name
+      primary: title
     fields:
-      - name: name
-        label: "სახელი და გვარი"
+      - name: title
+        label: "წოდება / პროფესია"
+        description: "მაგ: არქიტექტორი, სამოქალაქო ინჟინერი. ეს ჩანს საჯაროდ — სახელის ნაცვლად."
         type: string
         required: true
 
-      - name: role
-        label: "როლი / წოდება"
-        description: "მაგ: ლექტორი და მენტორი (AutoCAD, Revit, Rhino)"
-        type: string
-        required: true
-
-      - name: bio
-        label: "ბიოგრაფია"
-        description: "არასავალდებულო. დაცარიელების შემთხვევაში საიტზე გამოჩნდება მხოლოდ სახელი და როლი — ტექსტი არ გამოჩნდება."
+      - name: oneLiner
+        label: "მოკლე აღწერა (ერთი წინადადება)"
+        description: "ჩანს კურსის გვერდის გვერდით პანელში, სათაურის ქვემოთ."
         type: text
+        required: true
+
+      - name: facts
+        label: "მოკლე ფაქტები (ზუსტად 3)"
+        description: "მაგ: '10 წელი დარგში'. ჩანს პატარა იარლიყებად."
+        type: string
+        list:
+          min: 3
+          max: 3
+
+      - name: courses
+        label: "რომელ კურსებს ასწავლის"
+        description: "აირჩიეთ ყველა კურსი/პროგრამა, რომელზეც ეს ლექტორი ჩანდება."
+        type: select
+        options:
+          multiple: true
+          values:
+            - name: archicad
+              label: "Archicad"
+            - name: autocad
+              label: "AutoCAD"
+            - name: revit
+              label: "Revit"
+            - name: rhino
+              label: "Rhino"
+            - name: 3ds-max
+              label: "3ds Max"
+
+      - name: showIdentity
+        label: "ვინაობის ჩვენება"
+        description: "ამჟამად გამორთულია საიტზე (სახელი, ფოტო და სხვა ვინაობის დეტალები არსად ჩანს). ჩართვას ამ ეტაპზე ეფექტი არ აქვს საიტზე — დეველოპერთან შეთანხმების გარეშე ნუ ჩართავთ."
+        type: boolean
+        default: false
+
+      - name: body
+        label: "სრული ბიოგრაფია (2 აბზაცი)"
+        description: "ჩანს კურსის გვერდზე, განყოფილებაში 'ვინ გასწავლით'. არ ჩაწეროთ სახელი, კომპანიის ან უნივერსიტეტის სახელი."
+        type: rich-text
 
   - name: settings
     label: "ზოგადი პარამეტრები"

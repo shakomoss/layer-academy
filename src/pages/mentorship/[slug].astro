@@ -5,10 +5,10 @@ import CourseSidebar from '../../components/CourseSidebar.astro';
 import MobileBottomBar from '../../components/MobileBottomBar.astro';
 import FactRows, { type FactRow } from '../../components/FactRows.astro';
 import Syllabus from '../../components/Syllabus.astro';
-import InstructorBio from '../../components/InstructorBio.astro';
+import InstructorSection from '../../components/InstructorSection.astro';
 import FAQ from '../../components/FAQ.astro';
 import { buildFaqItems } from '../../lib/faq';
-import { resolveInstructor } from '../../lib/instructors';
+import { getInstructorForCourse } from '../../lib/instructors';
 import ViewContentTracker from '../../components/ViewContentTracker.astro';
 import { buildBreadcrumbJsonLd, buildCourseJsonLd, buildFaqJsonLd } from '../../lib/structured-data';
 
@@ -19,7 +19,7 @@ export async function getStaticPaths() {
 
 const { course } = Astro.props;
 const { title, slug, mentorship, group, syllabus, seoTitle, seoDescription } = course.data;
-const instructor = await resolveInstructor(course.data.instructor);
+const instructor = await getInstructorForCourse(slug);
 
 const pageTitle = seoTitle || `${title} — ინდივიდუალური მენტორინგი | Layer Academy`;
 const pageDescription =
@@ -41,7 +41,8 @@ const courseJsonLd = buildCourseJsonLd({
   url: pageUrl,
   image: new URL(`/og/${slug}-mentorship.png`, Astro.site).toString(),
   price: mentorship.monthlyPrice,
-  instructorName: instructor?.data.name ?? '',
+  instructorTitle: instructor?.data.title,
+  instructorOneLiner: instructor?.data.oneLiner,
 });
 const faqJsonLd = buildFaqJsonLd(faqItems);
 const breadcrumbJsonLd = buildBreadcrumbJsonLd([
@@ -80,12 +81,7 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd([
         <Syllabus syllabus={syllabus} introText={syllabus?.topics ? 'მენტორინგის ფარგლებში შესაძლებელია შემდეგი თემების შესწავლა:' : undefined} />
       </section>
 
-      {instructor && (
-        <section class="course-section">
-          <h2>მენტორი</h2>
-          <InstructorBio name={instructor.data.name} role={instructor.data.role} bio={instructor.data.bio} />
-        </section>
-      )}
+      {instructor && <InstructorSection instructor={instructor} />}
 
       <section class="course-section payment-note">
         <h2>გადახდა</h2>
@@ -111,6 +107,11 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd([
       suffix=" / თვეში"
       facts={facts}
       ctaHref={registerHref}
+      instructor={
+        instructor
+          ? { title: instructor.data.title, oneLiner: instructor.data.oneLiner, facts: instructor.data.facts }
+          : undefined
+      }
     />
   </div>
 

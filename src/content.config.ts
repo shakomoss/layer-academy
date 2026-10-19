@@ -23,11 +23,6 @@ const courses = defineCollection({
       enabled: z.boolean().default(true),
       monthlyPrice: z.number(),
     }),
-    // Plain string id rather than Astro's reference() helper: the admin panel
-    // (Pages CMS) writes this value and we can't be certain whether it stores
-    // the bare filename or a path with extension, so resolveInstructor() below
-    // normalizes either form instead of letting a strict reference() fail the build.
-    instructor: z.string(),
     goal: z.string().optional(),
     outcome: z.string().optional(),
     syllabus: z
@@ -51,9 +46,18 @@ const courses = defineCollection({
 const instructors = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/instructors' }),
   schema: z.object({
-    name: z.string(),
-    role: z.string(),
-    bio: z.string().default(''),
+    // Internal only — never rendered anywhere on the site (privacy).
+    id: z.string(),
+    title: z.string(),
+    oneLiner: z.string(),
+    facts: z.array(z.string()).length(3),
+    // Course/mentorship slugs this instructor teaches — the owning direction
+    // is instructor -> courses, not the other way around (see
+    // getInstructorForCourse in src/lib/instructors.ts).
+    courses: z.array(z.string()),
+    // No rendering behavior yet if this becomes true — see the TODO next to
+    // its only read, in src/components/InstructorSection.astro.
+    showIdentity: z.boolean().default(false),
   }),
 });
 

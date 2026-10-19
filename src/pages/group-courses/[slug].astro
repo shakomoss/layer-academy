@@ -5,10 +5,10 @@ import CourseSidebar from '../../components/CourseSidebar.astro';
 import MobileBottomBar from '../../components/MobileBottomBar.astro';
 import FactRows, { type FactRow } from '../../components/FactRows.astro';
 import Syllabus from '../../components/Syllabus.astro';
-import InstructorBio from '../../components/InstructorBio.astro';
+import InstructorSection from '../../components/InstructorSection.astro';
 import FAQ from '../../components/FAQ.astro';
 import { buildFaqItems } from '../../lib/faq';
-import { resolveInstructor } from '../../lib/instructors';
+import { getInstructorForCourse } from '../../lib/instructors';
 import { getCohortLabel, getCurrentPrice } from '../../lib/cohort';
 import ViewContentTracker from '../../components/ViewContentTracker.astro';
 import { buildBreadcrumbJsonLd, buildCourseJsonLd, buildFaqJsonLd } from '../../lib/structured-data';
@@ -20,7 +20,7 @@ export async function getStaticPaths() {
 
 const { course } = Astro.props;
 const { title, slug, group, goal, outcome, syllabus, mentorship, seoTitle, seoDescription } = course.data;
-const instructor = await resolveInstructor(course.data.instructor);
+const instructor = await getInstructorForCourse(slug);
 
 const pageTitle = seoTitle || `${title} კურსი ონლაინ — საბაზისო დონე | Layer Academy`;
 const pageDescription =
@@ -49,7 +49,8 @@ const courseJsonLd = buildCourseJsonLd({
   image: new URL(`/og/${slug}-group.png`, Astro.site).toString(),
   price: currentPrice,
   schedule: group.schedule,
-  instructorName: instructor?.data.name ?? '',
+  instructorTitle: instructor?.data.title,
+  instructorOneLiner: instructor?.data.oneLiner,
 });
 const faqJsonLd = buildFaqJsonLd(faqItems);
 const breadcrumbJsonLd = buildBreadcrumbJsonLd([
@@ -99,12 +100,7 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd([
         <p>კურსი განკუთვნილია სრულიად დამწყებთათვის — წინასწარი გამოცდილება არ გჭირდებათ.</p>
       </section>
 
-      {instructor && (
-        <section class="course-section">
-          <h2>ინსტრუქტორი</h2>
-          <InstructorBio name={instructor.data.name} role={instructor.data.role} bio={instructor.data.bio} />
-        </section>
-      )}
+      {instructor && <InstructorSection instructor={instructor} />}
 
       <section class="course-section payment-note">
         <h2>გადახდა</h2>
@@ -132,6 +128,7 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd([
       seatsLeft={group.seatsLeft}
       facts={facts}
       ctaHref={registerHref}
+      instructor={instructor ? { title: instructor.data.title, oneLiner: instructor.data.oneLiner } : undefined}
     />
   </div>
 
