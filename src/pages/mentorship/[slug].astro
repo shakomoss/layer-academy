@@ -1,8 +1,9 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import FactsStrip from '../../components/FactsStrip.astro';
-import PriceBox from '../../components/PriceBox.astro';
+import CourseSidebar from '../../components/CourseSidebar.astro';
+import MobileBottomBar from '../../components/MobileBottomBar.astro';
+import FactRows, { type FactRow } from '../../components/FactRows.astro';
 import Syllabus from '../../components/Syllabus.astro';
 import InstructorBio from '../../components/InstructorBio.astro';
 import FAQ from '../../components/FAQ.astro';
@@ -24,10 +25,12 @@ const pageTitle = seoTitle || `${title} — ინდივიდუალურ
 const pageDescription =
   seoDescription || `${title}-ის ინდივიდუალური ონლაინ მენტორინგი — ყოველკვირეული 1:1 სესიები მენტორთან.`;
 
-const facts = [
-  { icon: 'calendar' as const, label: 'ყოველკვირეული 1:1 სესია' },
-  { icon: 'monitor' as const, label: 'ონლაინ' },
-  { icon: 'clock' as const, label: 'სწავლის დაწყება ნებისმიერ დროს' },
+const registerHref = `/register/?course=${slug}&type=mentorship`;
+
+const facts: FactRow[] = [
+  { icon: 'calendar', text: 'ნებისმიერ დროს' },
+  { icon: 'monitor', text: 'ონლაინ' },
+  { icon: 'clock', text: 'კვირაში ერთხელ, შეთანხმებით მენტორთან' },
 ];
 
 const pageUrl = new URL(`/mentorship/${slug}/`, Astro.site).toString();
@@ -52,67 +55,90 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd([
   <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
   <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
   <ViewContentTracker contentName={title} contentCategory="mentorship" value={mentorship.monthlyPrice} />
-  <article class="container course-page">
-    <header class="course-header">
-      <h1 class="latin software-name">{title}</h1>
-      <p class="course-subtitle">ინდივიდუალური მენტორინგი</p>
-    </header>
 
-    <FactsStrip facts={facts} />
+  <div class="container course-detail-grid">
+    <article class="course-main">
+      <header class="course-header">
+        <h1 class="latin software-name">{title}</h1>
+        <p class="course-subtitle">ინდივიდუალური მენტორინგი</p>
+      </header>
 
-    <div class="course-price-row">
-      <PriceBox price={mentorship.monthlyPrice} suffix=" / თვეში" />
-      <a href={`/register/?course=${slug}&type=mentorship`} class="btn btn-primary">დარეგისტრირდით</a>
-    </div>
+      <div class="mobile-facts">
+        <FactRows facts={facts} />
+      </div>
 
-    <section class="course-section">
-      <h2>რას მოიცავს მენტორინგი</h2>
-      <p>
-        ყოველკვირეული 1:1 ონლაინ სესია მენტორთან, უკუკავშირი თქვენ ნამუშევარზე, კონსულტაცია და პასუხები
-        კითხვებზე. განრიგი შეთანხმდება მენტორთან ინდივიდუალურად.
-      </p>
-    </section>
-
-    <section class="course-section">
-      <h2>თემები, რომლებზეც შეგიძლიათ ფოკუსირება</h2>
-      <Syllabus syllabus={syllabus} introText={syllabus?.topics ? 'მენტორინგის ფარგლებში შესაძლებელია შემდეგი თემების შესწავლა:' : undefined} />
-    </section>
-
-    {instructor && (
       <section class="course-section">
-        <h2>მენტორი</h2>
-        <InstructorBio
-          name={instructor.data.name}
-          role={instructor.data.role}
-          bio={instructor.data.bio}
-        />
-      </section>
-    )}
-
-    <section class="course-section payment-note">
-      <h2>გადახდა</h2>
-      <p>გადახდა ინვოისით (საბანკო გადარიცხვა), ყოველთვიურად. დარეგისტრირების შემდეგ დაგიკავშირდებით და გამოგიწერთ ინვოისს.</p>
-    </section>
-
-    <section class="course-section">
-      <h2>კითხვები და პასუხები</h2>
-      <FAQ items={faqItems} />
-    </section>
-
-    {group.enabled && (
-      <section class="course-section cross-link">
+        <h2>რას მოიცავს მენტორინგი</h2>
         <p>
-          გირჩევნიათ ჯგუფური ფორმატი? <a href={`/group-courses/${slug}/`}>{title}-ის ჯგუფური კურსი</a>
+          ყოველკვირეული 1:1 ონლაინ სესია მენტორთან, უკუკავშირი თქვენ ნამუშევარზე, კონსულტაცია და პასუხები
+          კითხვებზე. განრიგი შეთანხმდება მენტორთან ინდივიდუალურად.
         </p>
       </section>
-    )}
-  </article>
+
+      <section class="course-section">
+        <h2>თემები, რომლებზეც შეგიძლიათ ფოკუსირება</h2>
+        <Syllabus syllabus={syllabus} introText={syllabus?.topics ? 'მენტორინგის ფარგლებში შესაძლებელია შემდეგი თემების შესწავლა:' : undefined} />
+      </section>
+
+      {instructor && (
+        <section class="course-section">
+          <h2>მენტორი</h2>
+          <InstructorBio name={instructor.data.name} role={instructor.data.role} bio={instructor.data.bio} />
+        </section>
+      )}
+
+      <section class="course-section payment-note">
+        <h2>გადახდა</h2>
+        <p>გადახდა ინვოისით (საბანკო გადარიცხვა), ყოველთვიურად. დარეგისტრირების შემდეგ დაგიკავშირდებით და გამოგიწერთ ინვოისს.</p>
+      </section>
+
+      <section class="course-section">
+        <h2>კითხვები და პასუხები</h2>
+        <FAQ items={faqItems} />
+      </section>
+
+      {group.enabled && (
+        <section class="course-section cross-link">
+          <p>
+            გირჩევნიათ ჯგუფური ფორმატი? <a href={`/group-courses/${slug}/`}>{title}-ის ჯგუფური კურსი</a>
+          </p>
+        </section>
+      )}
+    </article>
+
+    <CourseSidebar
+      price={mentorship.monthlyPrice}
+      suffix=" / თვეში"
+      facts={facts}
+      ctaHref={registerHref}
+    />
+  </div>
+
+  <MobileBottomBar price={mentorship.monthlyPrice} suffix=" / თვეში" ctaHref={registerHref} />
 </BaseLayout>
 
 <style>
-  .course-page {
+  .course-detail-grid {
     padding-block: var(--space-5) var(--space-6);
-    max-width: 72ch;
+    max-width: 1160px;
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  @media (min-width: 1024px) {
+    .course-detail-grid {
+      grid-template-columns: minmax(0, 1fr) 360px;
+      gap: 64px;
+    }
+  }
+
+  .course-main {
+    max-width: 65ch;
+  }
+
+  .course-main :global(p) {
+    font-size: 17px;
+    line-height: 1.7;
   }
 
   .course-header {
@@ -120,10 +146,16 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd([
   }
 
   .software-name {
-    font-size: clamp(2.5rem, 6vw, 4rem);
+    font-size: clamp(2.5rem, 6vw, 64px);
     font-weight: 300;
     letter-spacing: 0.08em;
     text-transform: uppercase;
+  }
+
+  @media (min-width: 1024px) {
+    .software-name {
+      font-size: 64px;
+    }
   }
 
   .course-subtitle {
@@ -131,12 +163,14 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd([
     margin-top: var(--space-1);
   }
 
-  .course-price-row {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: var(--space-3);
+  .mobile-facts {
     margin-block: var(--space-4);
+  }
+
+  @media (min-width: 1024px) {
+    .mobile-facts {
+      display: none;
+    }
   }
 
   .course-section {
@@ -155,5 +189,11 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd([
 
   .cross-link a {
     text-decoration: underline;
+  }
+
+  @media (max-width: 1023px) {
+    .course-detail-grid {
+      padding-bottom: calc(var(--space-6) + 72px);
+    }
   }
 </style>

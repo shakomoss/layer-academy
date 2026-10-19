@@ -1,14 +1,15 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import KeyFacts from '../../components/KeyFacts.astro';
-import PriceBox from '../../components/PriceBox.astro';
+import CourseSidebar from '../../components/CourseSidebar.astro';
+import MobileBottomBar from '../../components/MobileBottomBar.astro';
+import FactRows, { type FactRow } from '../../components/FactRows.astro';
 import Syllabus from '../../components/Syllabus.astro';
 import InstructorBio from '../../components/InstructorBio.astro';
 import FAQ from '../../components/FAQ.astro';
 import { buildFaqItems } from '../../lib/faq';
 import { resolveInstructor } from '../../lib/instructors';
-import { getCurrentPrice } from '../../lib/cohort';
+import { getCohortLabel, getCurrentPrice } from '../../lib/cohort';
 import ViewContentTracker from '../../components/ViewContentTracker.astro';
 import { buildBreadcrumbJsonLd, buildCourseJsonLd, buildFaqJsonLd } from '../../lib/structured-data';
 
@@ -29,6 +30,15 @@ const currentPrice = getCurrentPrice({
   earlyBirdPrice: group.earlyBirdPrice,
   earlyBirdUntil: group.earlyBirdUntil,
 }).currentPrice;
+
+const registerHref = `/register/?course=${slug}&type=group`;
+
+const facts: FactRow[] = [
+  { icon: 'calendar', text: getCohortLabel({ nextStartDate: group.nextStartDate }), cohort: true, nextStartDate: group.nextStartDate },
+  { icon: 'monitor', text: 'ონლაინ' },
+  { icon: 'clock', text: group.schedule || 'განრიგი მალე დაზუსტდება' },
+  ...(group.duration ? [{ icon: 'list' as const, text: group.duration }] : []),
+];
 
 const pageUrl = new URL(`/group-courses/${slug}/`, Astro.site).toString();
 const faqItems = buildFaqItems();
@@ -53,85 +63,108 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd([
   <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
   <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
   <ViewContentTracker contentName={title} contentCategory="group" value={currentPrice} />
-  <article class="container course-page">
-    <header class="course-header">
-      <h1 class="latin software-name">{title}</h1>
-      <p class="course-subtitle">საფუძვლები დამწყებთათვის</p>
-    </header>
 
-    <KeyFacts nextStartDate={group.nextStartDate} schedule={group.schedule} duration={group.duration} />
+  <div class="container course-detail-grid">
+    <article class="course-main">
+      <header class="course-header">
+        <h1 class="latin software-name">{title}</h1>
+        <p class="course-subtitle">საფუძვლები დამწყებთათვის</p>
+      </header>
 
-    <div class="course-price-row">
-      <PriceBox price={group.price} earlyBirdPrice={group.earlyBirdPrice} earlyBirdUntil={group.earlyBirdUntil} />
-      <a href={`/register/?course=${slug}&type=group`} class="btn btn-primary">დარეგისტრირდით</a>
-    </div>
+      <div class="mobile-facts">
+        <FactRows facts={facts} />
+      </div>
 
-    {group.seatsLeft != null && <p class="seats-left">დარჩენილია {group.seatsLeft} ადგილი</p>}
+      {goal && (
+        <section class="course-section">
+          <h2>კურსის მიზანი</h2>
+          <p>{goal}</p>
+        </section>
+      )}
 
-    {goal && (
       <section class="course-section">
-        <h2>კურსის მიზანი</h2>
-        <p>{goal}</p>
+        <h2>რას შეისწავლით</h2>
+        <Syllabus syllabus={syllabus} introText={syllabus?.topics ? 'კურსის ფარგლებში შეისწავლით:' : undefined} />
       </section>
-    )}
 
-    <section class="course-section">
-      <h2>რას შეისწავლით</h2>
-      <Syllabus syllabus={syllabus} introText={syllabus?.topics ? 'კურსის ფარგლებში შეისწავლით:' : undefined} />
-    </section>
+      {outcome && (
+        <section class="course-section">
+          <h2>კურსის შედეგი</h2>
+          <p>{outcome}</p>
+        </section>
+      )}
 
-    {outcome && (
       <section class="course-section">
-        <h2>კურსის შედეგი</h2>
-        <p>{outcome}</p>
+        <h2>ვისთვისაა კურსი</h2>
+        <p>კურსი განკუთვნილია სრულიად დამწყებთათვის — წინასწარი გამოცდილება არ გჭირდებათ.</p>
       </section>
-    )}
 
-    <section class="course-section">
-      <h2>ვისთვისაა კურსი</h2>
-      <p>კურსი განკუთვნილია სრულიად დამწყებთათვის — წინასწარი გამოცდილება არ გჭირდებათ.</p>
-    </section>
+      {instructor && (
+        <section class="course-section">
+          <h2>ინსტრუქტორი</h2>
+          <InstructorBio name={instructor.data.name} role={instructor.data.role} bio={instructor.data.bio} />
+        </section>
+      )}
 
-    {instructor && (
+      <section class="course-section payment-note">
+        <h2>გადახდა</h2>
+        <p>გადახდა ინვოისით (საბანკო გადარიცხვა). დარეგისტრირების შემდეგ დაგიკავშირდებით და გამოგიწერთ ინვოისს.</p>
+      </section>
+
       <section class="course-section">
-        <h2>ინსტრუქტორი</h2>
-        <InstructorBio
-          name={instructor.data.name}
-          role={instructor.data.role}
-          bio={instructor.data.bio}
-        />
+        <h2>კითხვები და პასუხები</h2>
+        <FAQ items={faqItems} />
       </section>
-    )}
 
-    <section class="course-section payment-note">
-      <h2>გადახდა</h2>
-      <p>გადახდა ინვოისით (საბანკო გადარიცხვა). დარეგისტრირების შემდეგ დაგიკავშირდებით და გამოგიწერთ ინვოისს.</p>
-    </section>
+      {mentorship.enabled && (
+        <section class="course-section cross-link">
+          <p>
+            გსურთ ინდივიდუალური ტემპი? <a href={`/mentorship/${slug}/`}>{title}-ის ინდივიდუალური მენტორინგი</a>
+          </p>
+        </section>
+      )}
+    </article>
 
-    <section class="course-section">
-      <h2>კითხვები და პასუხები</h2>
-      <FAQ items={faqItems} />
-    </section>
-
-    {mentorship.enabled && (
-      <section class="course-section cross-link">
-        <p>
-          გსურთ ინდივიდუალური ტემპი? <a href={`/mentorship/${slug}/`}>{title}-ის ინდივიდუალური მენტორინგი</a>
-        </p>
-      </section>
-    )}
-  </article>
-
-  <div class="mobile-sticky-bar">
-    <PriceBox price={group.price} earlyBirdPrice={group.earlyBirdPrice} earlyBirdUntil={group.earlyBirdUntil} />
-    <a href={`/register/?course=${slug}&type=group`} class="btn btn-primary">დარეგისტრირდით</a>
+    <CourseSidebar
+      price={group.price}
+      earlyBirdPrice={group.earlyBirdPrice}
+      earlyBirdUntil={group.earlyBirdUntil}
+      seatsLeft={group.seatsLeft}
+      facts={facts}
+      ctaHref={registerHref}
+    />
   </div>
+
+  <MobileBottomBar
+    price={group.price}
+    earlyBirdPrice={group.earlyBirdPrice}
+    earlyBirdUntil={group.earlyBirdUntil}
+    ctaHref={registerHref}
+  />
 </BaseLayout>
 
 <style>
-  .course-page {
+  .course-detail-grid {
     padding-block: var(--space-5) var(--space-6);
-    max-width: 72ch;
+    max-width: 1160px;
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  @media (min-width: 1024px) {
+    .course-detail-grid {
+      grid-template-columns: minmax(0, 1fr) 360px;
+      gap: 64px;
+    }
+  }
+
+  .course-main {
+    max-width: 65ch;
+  }
+
+  .course-main :global(p) {
+    font-size: 17px;
+    line-height: 1.7;
   }
 
   .course-header {
@@ -139,10 +172,16 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd([
   }
 
   .software-name {
-    font-size: clamp(2.5rem, 6vw, 4rem);
+    font-size: clamp(2.5rem, 6vw, 64px);
     font-weight: 300;
     letter-spacing: 0.08em;
     text-transform: uppercase;
+  }
+
+  @media (min-width: 1024px) {
+    .software-name {
+      font-size: 64px;
+    }
   }
 
   .course-subtitle {
@@ -150,18 +189,14 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd([
     margin-top: var(--space-1);
   }
 
-  .course-price-row {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: var(--space-3);
+  .mobile-facts {
     margin-block: var(--space-4);
   }
 
-  .seats-left {
-    color: var(--color-muted);
-    font-size: 0.9rem;
-    margin-bottom: var(--space-3);
+  @media (min-width: 1024px) {
+    .mobile-facts {
+      display: none;
+    }
   }
 
   .course-section {
@@ -182,38 +217,9 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd([
     text-decoration: underline;
   }
 
-  .mobile-sticky-bar {
-    display: none;
-  }
-
-  @media (max-width: 760px) {
-    .mobile-sticky-bar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: var(--space-2);
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      z-index: 40;
-      background: var(--color-bg);
-      border-top: 1px solid var(--color-divider);
-      padding: var(--space-2) var(--space-3);
-    }
-
-    .mobile-sticky-bar :global(.price-box) {
-      border: none;
-      padding: 0;
-      gap: 0;
-    }
-
-    .mobile-sticky-bar :global(.price-current) {
-      font-size: 1.4rem;
-    }
-
-    .course-page {
-      padding-bottom: calc(var(--space-6) + 64px);
+  @media (max-width: 1023px) {
+    .course-detail-grid {
+      padding-bottom: calc(var(--space-6) + 72px);
     }
   }
 </style>

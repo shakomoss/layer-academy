@@ -1,0 +1,67 @@
+---
+import { formatEarlyBirdUntil, getCurrentPrice } from '../lib/cohort';
+
+interface Props {
+  price: number;
+  earlyBirdPrice?: number;
+  earlyBirdUntil?: Date;
+  suffix?: string;
+  size?: 'large' | 'compact';
+}
+
+const { price, earlyBirdPrice, earlyBirdUntil, suffix = '', size = 'large' } = Astro.props;
+const { currentPrice, regularPrice, isEarlyBird } = getCurrentPrice({ price, earlyBirdPrice, earlyBirdUntil });
+---
+<div class={`price-display price-display-${size}`}>
+  {isEarlyBird && (
+    <p class="price-old"><span class="num">{regularPrice}</span> <span class="lari">₾</span></p>
+  )}
+  <p class="price-current">
+    <span class="num">{currentPrice}</span> <span class="lari">₾</span>{suffix}
+  </p>
+  {isEarlyBird && earlyBirdUntil && (
+    <p class="price-note">ფასდაკლება {formatEarlyBirdUntil(earlyBirdUntil)}-მდე</p>
+  )}
+</div>
+
+<style>
+  .price-display {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+
+  .price-old {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--color-muted);
+    text-decoration: line-through;
+  }
+
+  .price-current {
+    margin: 0;
+    font-weight: 600;
+  }
+
+  .price-current .num {
+    font-family: var(--font-latin);
+  }
+
+  .price-current .lari {
+    font-family: var(--font-georgian);
+  }
+
+  .price-display-large .price-current {
+    font-size: 40px;
+  }
+
+  .price-display-compact .price-current {
+    font-size: 28px;
+  }
+
+  .price-note {
+    margin: 0;
+    font-size: 0.8rem;
+    color: var(--color-muted);
+  }
+</style>

@@ -1,0 +1,72 @@
+---
+import PriceDisplay from './PriceDisplay.astro';
+import FactRows, { type FactRow } from './FactRows.astro';
+
+interface Props {
+  price: number;
+  earlyBirdPrice?: number;
+  earlyBirdUntil?: Date;
+  suffix?: string;
+  seatsLeft?: number;
+  facts: FactRow[];
+  ctaHref: string;
+  ctaLabel?: string;
+}
+
+const {
+  price,
+  earlyBirdPrice,
+  earlyBirdUntil,
+  suffix,
+  seatsLeft,
+  facts,
+  ctaHref,
+  ctaLabel = 'დარეგისტრირდით',
+} = Astro.props;
+---
+<aside class="course-sidebar">
+  <PriceDisplay price={price} earlyBirdPrice={earlyBirdPrice} earlyBirdUntil={earlyBirdUntil} suffix={suffix} size="large" />
+  {seatsLeft != null && <p class="sidebar-seats">დარჩენილია {seatsLeft} ადგილი</p>}
+
+  <hr class="sidebar-rule" />
+
+  <FactRows facts={facts} />
+
+  <a href={ctaHref} class="btn btn-primary sidebar-cta">{ctaLabel}</a>
+</aside>
+
+<style>
+  .course-sidebar {
+    display: none;
+  }
+
+  @media (min-width: 1024px) {
+    .course-sidebar {
+      display: block;
+      position: sticky;
+      top: 32px;
+      align-self: start;
+      border: 1px solid #cfcac0;
+      padding: 32px;
+    }
+  }
+
+  .sidebar-seats {
+    margin: 0.5rem 0 0;
+    font-size: 0.85rem;
+    color: var(--color-muted);
+  }
+
+  .sidebar-rule {
+    border: none;
+    border-top: 1px solid var(--color-divider);
+    margin: 24px 0;
+  }
+
+  .sidebar-cta {
+    width: 100%;
+    min-height: 56px;
+    margin-top: 24px;
+    justify-content: center;
+  }
+</style>
