@@ -4,9 +4,17 @@ import { getCohortStartFact, getCurrentPrice } from '../lib/cohort';
 
 interface Props {
   course: CollectionEntry<'courses'>;
+  /**
+   * Match this to where the card sits in the page's heading outline: 'h2'
+   * when the card is the next level under the page's own h1 (e.g. the
+   * group-courses listing page), 'h3' when it's nested under a section's
+   * own h2 (e.g. Home's "ჯგუფური კურსები" preview). Defaults to the more
+   * common nested case.
+   */
+  headingLevel?: 'h2' | 'h3';
 }
 
-const { course } = Astro.props;
+const { course, headingLevel: Heading = 'h3' } = Astro.props;
 const { title, slug, group } = course.data;
 const href = `/group-courses/${slug}/`;
 
@@ -21,7 +29,7 @@ const currentPrice = getCurrentPrice({
 }).currentPrice;
 ---
 <a href={href} class="group-course-card">
-  <h2 class="latin card-name">{title}</h2>
+  <Heading class="latin card-name">{title}</Heading>
   <p class="card-subtitle">საფუძვლები დამწყებთათვის</p>
 
   <ul class="card-facts">

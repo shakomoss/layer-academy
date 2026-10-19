@@ -2,7 +2,7 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Wordmark from '../components/Wordmark.astro';
-import CourseCard from '../components/CourseCard.astro';
+import GroupCourseCard from '../components/GroupCourseCard.astro';
 import FAQ from '../components/FAQ.astro';
 import { buildFaqItems } from '../lib/faq';
 import { getCurrentPrice } from '../lib/cohort';
@@ -63,11 +63,14 @@ const faqJsonLd = buildFaqJsonLd(faqItems);
     </div>
   </section>
 
-  <section class="container group-courses-preview">
-    <h2>ჯგუფური კურსები</h2>
-    <div class="course-grid">
+  <section class="group-courses-preview">
+    <div class="group-courses-header">
+      <h2>ჯგუფური კურსები</h2>
+      <p>ყველა კურსი ონლაინ ტარდება. ლექციების ჩანაწერები გეგზავნებათ.</p>
+    </div>
+    <div class="group-courses-grid">
       {groupCourses.map((course) => (
-        <CourseCard course={course} variant="group" />
+        <GroupCourseCard course={course} />
       ))}
     </div>
   </section>
@@ -150,7 +153,6 @@ const faqJsonLd = buildFaqJsonLd(faqItems);
   }
 
   .ways-to-learn h2,
-  .group-courses-preview h2,
   .how-it-works h2,
   .instructors h2,
   .faq h2,
@@ -159,7 +161,6 @@ const faqJsonLd = buildFaqJsonLd(faqItems);
   }
 
   .ways-grid,
-  .course-grid,
   .instructors-grid {
     display: grid;
     gap: var(--space-3);
@@ -170,14 +171,43 @@ const faqJsonLd = buildFaqJsonLd(faqItems);
     .instructors-grid {
       grid-template-columns: repeat(2, 1fr);
     }
-    .course-grid {
-      grid-template-columns: repeat(2, 1fr);
+  }
+
+  .group-courses-header,
+  .group-courses-grid {
+    width: 100%;
+    max-width: 1160px;
+    margin-inline: auto;
+    padding-inline: var(--space-3);
+  }
+
+  .group-courses-header h2 {
+    font-size: 32px;
+    font-weight: 600;
+  }
+
+  .group-courses-header p {
+    margin-top: var(--space-2);
+    margin-bottom: 36px;
+    font-size: 17px;
+    color: #55514a;
+  }
+
+  .group-courses-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+  }
+
+  @media (max-width: 1023px) {
+    .group-courses-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
 
-  @media (min-width: 1000px) {
-    .course-grid {
-      grid-template-columns: repeat(3, 1fr);
+  @media (max-width: 639px) {
+    .group-courses-grid {
+      grid-template-columns: 1fr;
     }
   }
 
