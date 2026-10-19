@@ -101,6 +101,7 @@ const faqJsonLd = buildFaqJsonLd(faqItems);
     <div class="lecturers-header">
       <h2>ლექტორები</h2>
     </div>
+    <div class="lecturers-divider"></div>
     <div class="lecturers-grid">
       {instructors.map(({ data, Content, programsLabel }) => (
         <div class="lecturer-block">
@@ -298,6 +299,15 @@ const faqJsonLd = buildFaqJsonLd(faqItems);
     font-weight: 600;
   }
 
+  .lecturers-divider {
+    width: 100%;
+    max-width: 1160px;
+    margin-inline: auto;
+    padding-inline: var(--space-3);
+    margin-top: 32px;
+    border-top: 1px solid #cfcac0;
+  }
+
   .lecturers-grid {
     width: 100%;
     max-width: 1160px;
@@ -312,11 +322,23 @@ const faqJsonLd = buildFaqJsonLd(faqItems);
     .lecturers-grid {
       grid-template-columns: repeat(2, 1fr);
     }
+
+    .lecturer-block:nth-child(even) {
+      border-left: 1px solid #cfcac0;
+      padding-left: 48px;
+    }
   }
 
-  .lecturer-block {
-    border-top: 1px solid var(--color-divider);
-    padding-top: 32px;
+  @media (max-width: 899px) {
+    .lecturers-grid {
+      gap: 0;
+    }
+
+    .lecturer-block:not(:first-child) {
+      margin-top: 40px;
+      padding-top: 40px;
+      border-top: 1px solid #cfcac0;
+    }
   }
 
   .lecturer-name {
