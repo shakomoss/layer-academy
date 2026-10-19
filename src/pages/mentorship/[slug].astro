@@ -21,7 +21,7 @@ const { course } = Astro.props;
 const { title, slug, mentorship, group, syllabus, seoTitle, seoDescription } = course.data;
 const instructor = await getInstructorForCourse(slug);
 
-const pageTitle = seoTitle || `${title} — ინდივიდუალური მენტორინგი | Layer Academy`;
+const pageTitle = seoTitle || `${title} - ინდივიდუალური მენტორინგი | Layer Academy`;
 const pageDescription =
   seoDescription || `${title}-ის ინდივიდუალური ონლაინ მენტორინგი — ყოველკვირეული 1:1 სესიები მენტორთან.`;
 

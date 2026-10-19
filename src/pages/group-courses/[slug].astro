@@ -22,7 +22,7 @@ const { course } = Astro.props;
 const { title, slug, group, goal, outcome, syllabus, mentorship, seoTitle, seoDescription } = course.data;
 const instructor = await getInstructorForCourse(slug);
 
-const pageTitle = seoTitle || `${title} კურსი ონლაინ — საბაზისო დონე | Layer Academy`;
+const pageTitle = seoTitle || `${title} კურსი ონლაინ - საბაზისო დონე | Layer Academy`;
 const pageDescription =
   seoDescription || `${title}-ის ჯგუფური, ონლაინ კურსი დამწყებთათვის. ლაივ ლექციები, საბაზისო დონე.`;
 const currentPrice = getCurrentPrice({
