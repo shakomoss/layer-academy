@@ -97,28 +97,9 @@ const faqJsonLd = buildFaqJsonLd(faqItems);
     </div>
   </section>
 
-  <section class="container how-it-works">
-    <h2>როგორ მუშაობს</h2>
-    <ol class="steps">
-      <li>
-        <span class="step-number">01</span>
-        <p>დარეგისტრირდით კურსზე ან მენტორინგზე მოსახერხებელი ფორმის საშუალებით.</p>
-      </li>
-      <li>
-        <span class="step-number">02</span>
-        <p>დაგიკავშირდებით და გამოგიწერთ ინვოისს გადასახდელად.</p>
-      </li>
-      <li>
-        <span class="step-number">03</span>
-        <p>სწავლას დაიწყებთ შეთანხმებულ დროზე.</p>
-      </li>
-    </ol>
-  </section>
-
   <section class="lecturers">
     <div class="lecturers-header">
       <h2>ლექტორები</h2>
-      <p>ყველა ლექტორი პრაქტიკოსია და დარგში ყოველდღე მუშაობს.</p>
     </div>
     <div class="lecturers-grid">
       {instructors.map(({ data, Content, programsLabel }) => (
@@ -251,14 +232,12 @@ const faqJsonLd = buildFaqJsonLd(faqItems);
   }
 
   .group-courses-preview,
-  .how-it-works,
   .lecturers,
   .faq,
   .final-cta {
     padding-block: var(--space-5);
   }
 
-  .how-it-works h2,
   .faq h2,
   .final-cta h2 {
     margin-bottom: var(--space-3);
@@ -307,32 +286,6 @@ const faqJsonLd = buildFaqJsonLd(faqItems);
     padding: var(--space-3);
   }
 
-  .steps {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: grid;
-    gap: var(--space-3);
-  }
-
-  @media (min-width: 760px) {
-    .steps {
-      grid-template-columns: repeat(3, 1fr);
-    }
-  }
-
-  .steps li {
-    border-top: 1px solid var(--color-divider);
-    padding-top: var(--space-2);
-  }
-
-  .step-number {
-    font-family: var(--font-latin);
-    color: var(--color-muted);
-    display: block;
-    margin-bottom: 0.4rem;
-  }
-
   .lecturers-header {
     width: 100%;
     max-width: 1160px;
@@ -343,12 +296,6 @@ const faqJsonLd = buildFaqJsonLd(faqItems);
   .lecturers-header h2 {
     font-size: 32px;
     font-weight: 600;
-  }
-
-  .lecturers-header p {
-    margin-top: var(--space-2);
-    font-size: 17px;
-    color: var(--color-muted);
   }
 
   .lecturers-grid {
