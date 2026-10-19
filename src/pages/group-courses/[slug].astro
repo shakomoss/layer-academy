@@ -9,7 +9,7 @@ import InstructorSection from '../../components/InstructorSection.astro';
 import FAQ from '../../components/FAQ.astro';
 import { buildFaqItems } from '../../lib/faq';
 import { getInstructorForCourse } from '../../lib/instructors';
-import { getCohortLabel, getCurrentPrice } from '../../lib/cohort';
+import { getCurrentPrice } from '../../lib/cohort';
 import ViewContentTracker from '../../components/ViewContentTracker.astro';
 import { buildBreadcrumbJsonLd, buildCourseJsonLd, buildFaqJsonLd } from '../../lib/structured-data';
 
@@ -34,11 +34,11 @@ const currentPrice = getCurrentPrice({
 const registerHref = `/register/?course=${slug}&type=group`;
 
 const facts: FactRow[] = [
-  { icon: 'calendar', text: getCohortLabel({ nextStartDate: group.nextStartDate }), cohort: true, nextStartDate: group.nextStartDate },
-  { icon: 'monitor', text: 'ონლაინ' },
-  { icon: 'clock', text: group.schedule || 'განრიგი მალე დაზუსტდება' },
-  ...(group.duration ? [{ icon: 'list' as const, text: group.duration }] : []),
+  { icon: 'monitor', text: 'ფორმატი: ონლაინ' },
+  { icon: 'graduation-cap', text: 'დონე: დამწყები' },
+  { icon: 'people', text: 'ჯგუფის ზომა: მცირე ჯგუფები' },
   { icon: 'award', text: 'სერტიფიკატი: კურსის დასრულებისას' },
+  { icon: 'play', text: 'ბონუსი: ლექციების ჩანაწერები' },
 ];
 
 const pageUrl = new URL(`/group-courses/${slug}/`, Astro.site).toString();

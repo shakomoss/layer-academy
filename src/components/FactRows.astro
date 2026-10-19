@@ -1,6 +1,6 @@
 ---
 export interface FactRow {
-  icon: 'calendar' | 'monitor' | 'clock' | 'list' | 'award';
+  icon: 'calendar' | 'monitor' | 'clock' | 'list' | 'award' | 'graduation-cap' | 'people' | 'play';
   text: string;
   /** Set for the "next start" row: text is the build-time value, revalidated client-side (see script below) so a cached page is never stale. */
   cohort?: boolean;
@@ -43,6 +43,26 @@ const { facts } = Astro.props;
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
           <circle cx="12" cy="9.5" r="5" />
           <path d="M9 13.5 7 20l5-2.5 5 2.5-2-6.5" />
+        </svg>
+      )}
+      {fact.icon === 'graduation-cap' && (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <path d="M12 4.5 3.5 9 12 13.5 20.5 9z" />
+          <path d="M7 11v4.5c0 1.5 2.2 3 5 3s5-1.5 5-3V11" />
+        </svg>
+      )}
+      {fact.icon === 'people' && (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <circle cx="8.5" cy="9" r="3" />
+          <circle cx="16.5" cy="10" r="2.3" />
+          <path d="M3.5 19c0-2.8 2.2-5 5-5s5 2.2 5 5" />
+          <path d="M14.3 14.3c2.2.3 3.7 2.1 3.7 4.7" />
+        </svg>
+      )}
+      {fact.icon === 'play' && (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <rect x="3.5" y="5.5" width="17" height="13" rx="1" />
+          <path d="M10 10l4 2.5-4 2.5z" />
         </svg>
       )}
       {fact.cohort ? (

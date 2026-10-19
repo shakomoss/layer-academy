@@ -48,27 +48,19 @@ const faqJsonLd = buildFaqJsonLd(faqItems);
     <div class="hero-facts">
       <div class="hero-fact">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-          <circle cx="12" cy="12" r="8.5" />
-          <path d="M12 7.5v5l3.5 2" />
+          <rect x="3" y="4.5" width="18" height="12" rx="1" />
+          <path d="M8.5 20h7M12 16.5V20" />
         </svg>
-        <p class="fact-main">ლაივ ონლაინ</p>
-        <p class="fact-sub">ლექციები</p>
-      </div>
-      <div class="hero-fact">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-          <rect x="3.5" y="5.5" width="17" height="13" rx="1" />
-          <path d="M10 10l4 2.5-4 2.5z" />
-        </svg>
-        <p class="fact-main">ყველა ლექციის</p>
-        <p class="fact-sub">ჩანაწერი</p>
+        <p class="fact-label">ფორმატი</p>
+        <p class="fact-value">ონლაინ</p>
       </div>
       <div class="hero-fact">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
           <path d="M12 4.5 3.5 9 12 13.5 20.5 9z" />
           <path d="M7 11v4.5c0 1.5 2.2 3 5 3s5-1.5 5-3V11" />
         </svg>
-        <p class="fact-main">დამწყებთათვის</p>
-        <p class="fact-sub">ნულიდან</p>
+        <p class="fact-label">დონე</p>
+        <p class="fact-value">დამწყები</p>
       </div>
       <div class="hero-fact">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
@@ -77,16 +69,24 @@ const faqJsonLd = buildFaqJsonLd(faqItems);
           <path d="M3.5 19c0-2.8 2.2-5 5-5s5 2.2 5 5" />
           <path d="M14.3 14.3c2.2.3 3.7 2.1 3.7 4.7" />
         </svg>
-        <p class="fact-main">მცირე ჯგუფები</p>
-        <p class="fact-sub">5 სტუდენტამდე</p>
+        <p class="fact-label">ჯგუფის ზომა</p>
+        <p class="fact-value">მცირე ჯგუფები</p>
       </div>
       <div class="hero-fact">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
           <circle cx="12" cy="9.5" r="5" />
           <path d="M9 13.5 7 20l5-2.5 5 2.5-2-6.5" />
         </svg>
-        <p class="fact-main">სერტიფიკატი</p>
-        <p class="fact-sub">კურსის დასრულებისას</p>
+        <p class="fact-label">სერტიფიკატი</p>
+        <p class="fact-value">კურსის დასრულებისას</p>
+      </div>
+      <div class="hero-fact">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <rect x="3.5" y="5.5" width="17" height="13" rx="1" />
+          <path d="M10 10l4 2.5-4 2.5z" />
+        </svg>
+        <p class="fact-label">ბონუსი</p>
+        <p class="fact-value">ლექციების ჩანაწერები</p>
       </div>
     </div>
   </section>
@@ -191,7 +191,7 @@ const faqJsonLd = buildFaqJsonLd(faqItems);
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
     padding: 28px 16px;
   }
 
@@ -205,19 +205,19 @@ const faqJsonLd = buildFaqJsonLd(faqItems);
     color: var(--color-ink);
   }
 
-  .hero-fact .fact-main {
-    font-size: 18px;
-    font-weight: 600;
+  .hero-fact .fact-label {
+    font-size: 15px;
+    color: #7e7a72;
   }
 
-  .hero-fact .fact-sub {
-    font-size: 15px;
-    color: #55514a;
+  .hero-fact .fact-value {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1c1b19;
   }
 
   @media (min-width: 1024px) {
-    .hero-fact .fact-main,
-    .hero-fact .fact-sub {
+    .hero-fact .fact-value {
       white-space: nowrap;
     }
   }

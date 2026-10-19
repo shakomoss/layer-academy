@@ -28,10 +28,11 @@ const pageDescription =
 const registerHref = `/register/?course=${slug}&type=mentorship`;
 
 const facts: FactRow[] = [
-  { icon: 'calendar', text: 'ნებისმიერ დროს' },
-  { icon: 'monitor', text: 'ონლაინ' },
-  { icon: 'clock', text: 'კვირაში ერთხელ, შეთანხმებით მენტორთან' },
+  { icon: 'monitor', text: 'ფორმატი: ონლაინ' },
+  { icon: 'graduation-cap', text: 'დონე: დამწყები' },
+  { icon: 'people', text: 'ჯგუფის ზომა: მცირე ჯგუფები' },
   { icon: 'award', text: 'სერტიფიკატი: კურსის დასრულებისას' },
+  { icon: 'play', text: 'ბონუსი: ლექციების ჩანაწერები' },
 ];
 
 const pageUrl = new URL(`/mentorship/${slug}/`, Astro.site).toString();
