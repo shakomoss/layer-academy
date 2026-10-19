@@ -29,10 +29,20 @@ const instructors = await Promise.all(
   })
 );
 
-const fromGroupPrice = Math.min(
-  ...groupCourses.map((c) => getCurrentPrice({ price: c.data.group.price, earlyBirdPrice: c.data.group.earlyBirdPrice, earlyBirdUntil: c.data.group.earlyBirdUntil }).currentPrice)
+const groupPrices = groupCourses.map(
+  (c) =>
+    getCurrentPrice({
+      price: c.data.group.price,
+      earlyBirdPrice: c.data.group.earlyBirdPrice,
+      earlyBirdUntil: c.data.group.earlyBirdUntil,
+    }).currentPrice
 );
-const fromMentorshipPrice = Math.min(...mentorshipCourses.map((c) => c.data.mentorship.monthlyPrice));
+const groupPriceMin = Math.min(...groupPrices);
+const groupPriceMax = Math.max(...groupPrices);
+
+const mentorshipPrices = mentorshipCourses.map((c) => c.data.mentorship.monthlyPrice);
+const mentorshipPriceMin = Math.min(...mentorshipPrices);
+const mentorshipPriceMax = Math.max(...mentorshipPrices);
 
 const faqItems = buildFaqItems();
 const organizationJsonLd = buildEducationalOrganization(Astro.site?.toString() ?? '');
@@ -60,20 +70,30 @@ const faqJsonLd = buildFaqJsonLd(faqItems);
       <article class="way-card">
         <h3>ჯგუფური კურსები</h3>
         <p>
-          ლაივ ონლაინ ლექციები ჩატარდება ჯგუფში, ახალი ნაკადი იხსნება ყოველ თვე. შესაფერისია
-          სტრუქტურირებული, ეტაპობრივი სწავლის მოყვარულთათვის.
+          ონლაინ ლაივ ლექციები მცირე ჯგუფში, ახალი ნაკადი ყოველთვიურად. ყველა ლექციის ჩანაწერი
+          გეგზავნებათ.
         </p>
-        <p class="way-price">კურსები {fromGroupPrice} ₾-დან</p>
-        <a href="/group-courses/" class="btn btn-secondary">კურსების ნახვა</a>
+        <div class="way-footer">
+          <p class="way-price-label">ფასი</p>
+          <p class="way-price">
+            <span class="num">{groupPriceMin}–{groupPriceMax}</span> <span class="lari">₾</span>
+          </p>
+          <a href="/group-courses/" class="way-cta">კურსების ნახვა →</a>
+        </div>
       </article>
       <article class="way-card">
         <h3>ინდივიდუალური მენტორინგი</h3>
         <p>
-          ყოველკვირეული 1:1 ონლაინ სესია მენტორთან, თქვენი ტემპითა და მიზნების მიხედვით. დაწყება
-          შესაძლებელია ნებისმიერ დროს.
+          ყოველკვირეული 1:1 ონლაინ შეხვედრები, თქვენთვის მოსახერხებელ დროს. დაწყება ნებისმიერ დროს
+          შეგიძლიათ.
         </p>
-        <p class="way-price">მენტორინგი {fromMentorshipPrice} ₾-დან / თვეში</p>
-        <a href="/mentorship/" class="btn btn-secondary">პროგრამების ნახვა</a>
+        <div class="way-footer">
+          <p class="way-price-label">ფასი</p>
+          <p class="way-price">
+            <span class="num">{mentorshipPriceMin}–{mentorshipPriceMax}</span> <span class="lari">₾</span> / თვეში
+          </p>
+          <a href="/mentorship/" class="way-cta">პროგრამების ნახვა →</a>
+        </div>
       </article>
     </div>
   </section>
@@ -230,19 +250,65 @@ const faqJsonLd = buildFaqJsonLd(faqItems);
     }
   }
 
-  .way-card,
   .instructor-card {
     border: 1px solid var(--color-divider);
     padding: var(--space-3);
   }
 
+  .way-card {
+    border: 1px solid var(--color-divider);
+    padding: 36px 32px;
+    display: flex;
+    flex-direction: column;
+  }
+
   .way-card h3 {
+    font-size: 24px;
+    font-weight: 600;
     margin-bottom: var(--space-2);
   }
 
+  .way-card p {
+    font-size: 17px;
+    line-height: 1.7;
+    color: #55514a;
+  }
+
+  .way-footer {
+    margin-top: auto;
+    padding-top: var(--space-3);
+  }
+
+  .way-price-label {
+    font-size: 14px;
+    color: var(--color-muted);
+  }
+
   .way-price {
+    margin-top: 0.2rem;
+    font-size: 24px;
+    font-weight: 600;
+    font-family: var(--font-georgian);
+  }
+
+  .way-price .num {
     font-family: var(--font-latin);
-    margin-block: var(--space-2);
+  }
+
+  .way-price .lari {
+    font-family: var(--font-georgian);
+  }
+
+  .way-cta {
+    display: inline-flex;
+    align-items: center;
+    margin-top: 20px;
+    background: #1c1b19;
+    color: #f7f5f0;
+    font-size: 16px;
+    padding: 14px 22px;
+    text-decoration: none;
+    white-space: nowrap;
   }
 
   .steps {
