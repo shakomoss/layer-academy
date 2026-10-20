@@ -21,7 +21,7 @@ const courses = defineCollection({
     }),
     mentorship: z.object({
       enabled: z.boolean().default(true),
-      monthlyPrice: z.number(),
+      price: z.number(),
     }),
     goal: z.string().optional(),
     outcome: z.string().optional(),

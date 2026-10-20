@@ -23,16 +23,15 @@ const instructor = await getInstructorForCourse(slug);
 
 const pageTitle = seoTitle || `${title} - ინდივიდუალური მენტორინგი | Layer Academy`;
 const pageDescription =
-  seoDescription || `${title}-ის ინდივიდუალური ონლაინ მენტორინგი — ყოველკვირეული 1:1 სესიები მენტორთან.`;
+  seoDescription || `${title}-ის კურსი იგივე სილაბუსით, ინდივიდუალურად — 1:1 ონლაინ შეხვედრები ლექტორთან.`;
 
 const registerHref = `/register/?course=${slug}&type=mentorship`;
 
 const facts: FactRow[] = [
-  { icon: 'monitor', text: 'ფორმატი: ონლაინ' },
+  { icon: 'monitor', text: 'ფორმატი: 1:1 ონლაინ' },
+  { icon: 'list', text: 'პროგრამა: კურსის სილაბუსი' },
+  { icon: 'clock', text: 'განრიგი: მოქნილი' },
   { icon: 'graduation-cap', text: 'დონე: დამწყები' },
-  { icon: 'people', text: 'ჯგუფის ზომა: მცირე ჯგუფები' },
-  { icon: 'award', text: 'სერტიფიკატი: კურსის დასრულებისას' },
-  { icon: 'play', text: 'ბონუსი: ლექციების ჩანაწერები' },
 ];
 
 const pageUrl = new URL(`/mentorship/${slug}/`, Astro.site).toString();
@@ -42,7 +41,7 @@ const courseJsonLd = buildCourseJsonLd({
   description: pageDescription,
   url: pageUrl,
   image: new URL(`/og/${slug}-mentorship.png`, Astro.site).toString(),
-  price: mentorship.monthlyPrice,
+  price: mentorship.price,
   instructorName: instructor?.data.name,
   instructorTitle: instructor?.data.title,
   instructorOneLiner: instructor?.data.oneLiner,
@@ -58,7 +57,7 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd([
   <script type="application/ld+json" set:html={JSON.stringify(courseJsonLd)} />
   <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
   <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
-  <ViewContentTracker contentName={title} contentCategory="mentorship" value={mentorship.monthlyPrice} />
+  <ViewContentTracker contentName={title} contentCategory="mentorship" value={mentorship.price} />
 
   <div class="container course-detail-grid">
     <article class="course-main">
@@ -74,21 +73,21 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd([
       <section class="course-section">
         <h2>რას მოიცავს მენტორინგი</h2>
         <p>
-          ყოველკვირეული 1:1 ონლაინ სესია მენტორთან, უკუკავშირი თქვენ ნამუშევარზე, კონსულტაცია და პასუხები
-          კითხვებზე. განრიგი შეთანხმდება მენტორთან ინდივიდუალურად.
+          იგივე კურსი და იგივე სილაბუსი, ოღონდ ინდივიდუალურად: 1:1 ონლაინ შეხვედრები ლექტორთან, თქვენთვის
+          მოსახერხებელ დროს და თქვენს ტემპში. დაწყება ნებისმიერ დროს შეგიძლიათ.
         </p>
       </section>
 
       <section class="course-section">
-        <h2>თემები, რომლებზეც შეგიძლიათ ფოკუსირება</h2>
-        <Syllabus syllabus={syllabus} introText={syllabus?.topics ? 'მენტორინგის ფარგლებში შესაძლებელია შემდეგი თემების შესწავლა:' : undefined} />
+        <h2>რას შეისწავლით</h2>
+        <Syllabus syllabus={syllabus} introText={syllabus?.topics ? 'კურსის ფარგლებში შეისწავლით:' : undefined} />
       </section>
 
       {instructor && <InstructorSection instructor={instructor} />}
 
       <section class="course-section payment-note">
         <h2>გადახდა</h2>
-        <p>გადახდა ინვოისით (საბანკო გადარიცხვა), ყოველთვიურად. დარეგისტრირების შემდეგ დაგიკავშირდებით და გამოგიწერთ ინვოისს.</p>
+        <p>გადახდა ინვოისით (საბანკო გადარიცხვა). დარეგისტრირების შემდეგ დაგიკავშირდებით და გამოგიწერთ ინვოისს.</p>
       </section>
 
       <section class="course-section">
@@ -106,8 +105,8 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd([
     </article>
 
     <CourseSidebar
-      price={mentorship.monthlyPrice}
-      suffix=" / თვეში"
+      price={mentorship.price}
+      priceLabel="სრული კურსი"
       facts={facts}
       ctaHref={registerHref}
       instructor={
@@ -123,7 +122,7 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd([
     />
   </div>
 
-  <MobileBottomBar price={mentorship.monthlyPrice} suffix=" / თვეში" ctaHref={registerHref} />
+  <MobileBottomBar price={mentorship.price} priceLabel="სრული კურსი" ctaHref={registerHref} />
 </BaseLayout>
 
 <style>

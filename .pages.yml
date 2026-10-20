@@ -100,8 +100,9 @@ content:
             type: boolean
             default: true
 
-          - name: monthlyPrice
-            label: "ფასი თვეში (₾)"
+          - name: price
+            label: "ინდივიდუალური კურსის ფასი (₾)"
+            description: "ერთჯერადი ფასი იგივე სილაბუსის ინდივიდუალურად გავლისთვის."
             type: number
             required: true
 

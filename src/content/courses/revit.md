@@ -9,7 +9,7 @@ group:
   price: 590
 mentorship:
   enabled: true
-  monthlyPrice: 1190
+  price: 1190
 syllabus:
   topics:
     - Revit-ის ინტერფეისს და პროგრამის ძირითად პრინციპებს

@@ -6,12 +6,14 @@ interface Props {
   earlyBirdPrice?: number;
   earlyBirdUntil?: Date | string;
   suffix?: string;
+  label?: string;
 }
 
-const { price, earlyBirdPrice, earlyBirdUntil, suffix } = Astro.props;
+const { price, earlyBirdPrice, earlyBirdUntil, suffix, label } = Astro.props;
 const { currentPrice, regularPrice, isEarlyBird } = getCurrentPrice({ price, earlyBirdPrice, earlyBirdUntil });
 ---
 <div class="price-box">
+  {label && <span class="price-label">{label}</span>}
   {isEarlyBird && <span class="price-old">{regularPrice} ₾{suffix}</span>}
   <span class="price-current">{currentPrice} ₾{suffix}</span>
   {isEarlyBird && earlyBirdUntil && (
@@ -20,6 +22,11 @@ const { currentPrice, regularPrice, isEarlyBird } = getCurrentPrice({ price, ear
 </div>
 
 <style>
+  .price-label {
+    font-size: 14px;
+    color: #7e7a72;
+  }
+
   .price-note {
     font-size: 0.8rem;
     color: var(--color-muted);

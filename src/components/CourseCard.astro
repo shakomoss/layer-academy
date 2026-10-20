@@ -14,7 +14,7 @@ const href = `/mentorship/${slug}/`;
 <article class="course-card">
   <h3 class="latin">{title}</h3>
   {instructorName && <p class="course-mentor">{instructorName}</p>}
-  <PriceBox price={mentorship.monthlyPrice} suffix=" / თვეში" />
+  <PriceBox price={mentorship.price} label="სრული კურსი" />
   <a href={href} class="btn btn-secondary course-link">პროგრამის ნახვა</a>
 </article>
 

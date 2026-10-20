@@ -6,13 +6,15 @@ interface Props {
   earlyBirdPrice?: number;
   earlyBirdUntil?: Date;
   suffix?: string;
+  label?: string;
   size?: 'large' | 'compact';
 }
 
-const { price, earlyBirdPrice, earlyBirdUntil, suffix = '', size = 'large' } = Astro.props;
+const { price, earlyBirdPrice, earlyBirdUntil, suffix = '', label, size = 'large' } = Astro.props;
 const { currentPrice, regularPrice, isEarlyBird } = getCurrentPrice({ price, earlyBirdPrice, earlyBirdUntil });
 ---
 <div class={`price-display price-display-${size}`}>
+  {label && <p class="price-label">{label}</p>}
   {isEarlyBird && (
     <p class="price-old"><span class="num">{regularPrice}</span> <span class="lari">₾</span></p>
   )}
@@ -29,6 +31,12 @@ const { currentPrice, regularPrice, isEarlyBird } = getCurrentPrice({ price, ear
     display: flex;
     flex-direction: column;
     gap: 0.2rem;
+  }
+
+  .price-label {
+    margin: 0;
+    font-size: 14px;
+    color: #7e7a72;
   }
 
   .price-old {

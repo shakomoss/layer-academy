@@ -130,7 +130,7 @@ export function validateRegistration(
           earlyBirdPrice: course.group.earlyBirdPrice,
           earlyBirdUntil: course.group.earlyBirdUntil,
         }).currentPrice
-      : course.mentorship.monthlyPrice;
+      : course.mentorship.price;
 
   return {
     ok: true,

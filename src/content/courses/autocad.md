@@ -13,7 +13,7 @@ group:
   schedule: კვირა, 18:00
 mentorship:
   enabled: true
-  monthlyPrice: 690
+  price: 690
 syllabus:
   topics:
     - AutoCAD-ის ინტერფეისს და სამუშაო გარემოს

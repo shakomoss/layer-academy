@@ -11,7 +11,7 @@ group:
   nextStartDate: 2026-10-18
 mentorship:
   enabled: true
-  monthlyPrice: 790
+  price: 790
 seoTitle: 3ds Max-ის საფუძვლების კურსი დამწყებთათვის
 seoDescription: >
   გსურთ 3D გრაფიკის შესწავლა? 3ds Max-ის კურსი დამწყებთათვის დაგეხმარებათ

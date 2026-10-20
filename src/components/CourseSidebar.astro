@@ -15,6 +15,7 @@ interface Props {
   earlyBirdPrice?: number;
   earlyBirdUntil?: Date;
   suffix?: string;
+  priceLabel?: string;
   seatsLeft?: number;
   facts: FactRow[];
   ctaHref: string;
@@ -27,6 +28,7 @@ const {
   earlyBirdPrice,
   earlyBirdUntil,
   suffix,
+  priceLabel,
   seatsLeft,
   facts,
   ctaHref,
@@ -35,7 +37,7 @@ const {
 } = Astro.props;
 ---
 <aside class="course-sidebar">
-  <PriceDisplay price={price} earlyBirdPrice={earlyBirdPrice} earlyBirdUntil={earlyBirdUntil} suffix={suffix} size="large" />
+  <PriceDisplay price={price} earlyBirdPrice={earlyBirdPrice} earlyBirdUntil={earlyBirdUntil} suffix={suffix} label={priceLabel} size="large" />
   {seatsLeft != null && <p class="sidebar-seats">დარჩენილია {seatsLeft} ადგილი</p>}
 
   <hr class="sidebar-rule" />

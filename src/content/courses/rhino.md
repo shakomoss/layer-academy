@@ -9,7 +9,7 @@ group:
   price: 690
 mentorship:
   enabled: true
-  monthlyPrice: 1390
+  price: 1390
 syllabus:
   topics:
     - Rhino-ის ინტერფეისს და სამუშაო გარემოს

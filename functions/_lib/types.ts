@@ -10,7 +10,7 @@ export interface CourseManifestEntry {
   };
   mentorship: {
     enabled: boolean;
-    monthlyPrice: number;
+    price: number;
   };
 }
 

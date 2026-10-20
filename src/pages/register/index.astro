@@ -17,7 +17,7 @@ const coursesData = courses.map((c) => ({
   },
   mentorship: {
     enabled: c.data.mentorship.enabled,
-    monthlyPrice: c.data.mentorship.monthlyPrice,
+    price: c.data.mentorship.price,
   },
 }));
 
@@ -116,7 +116,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY || '';
     slug: string;
     title: string;
     group: { enabled: boolean; price: number; earlyBirdPrice: number | null; earlyBirdUntil: string | null };
-    mentorship: { enabled: boolean; monthlyPrice: number };
+    mentorship: { enabled: boolean; price: number };
   }
 
   declare global {
@@ -215,7 +215,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY || '';
       });
       summaryPrice.textContent = isEarlyBird ? `ფასი: ${currentPrice} ₾ (ფასდაკლებით)` : `ფასი: ${currentPrice} ₾`;
     } else {
-      summaryPrice.textContent = `ფასი: ${course.mentorship.monthlyPrice} ₾ / თვეში`;
+      summaryPrice.textContent = `ფასი: ${course.mentorship.price} ₾`;
     }
   }
 
@@ -292,7 +292,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY || '';
               earlyBirdPrice: course.group.earlyBirdPrice ?? undefined,
               earlyBirdUntil: course.group.earlyBirdUntil ?? undefined,
             }).currentPrice
-          : course.mentorship.monthlyPrice;
+          : course.mentorship.price;
 
       trackLead({ contentName: course.title, value: price, eventId });
       window.location.href = `/thank-you/?course=${encodeURIComponent(course.slug)}&type=${encodeURIComponent(type)}`;

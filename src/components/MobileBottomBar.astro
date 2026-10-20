@@ -6,14 +6,15 @@ interface Props {
   earlyBirdPrice?: number;
   earlyBirdUntil?: Date;
   suffix?: string;
+  priceLabel?: string;
   ctaHref: string;
   ctaLabel?: string;
 }
 
-const { price, earlyBirdPrice, earlyBirdUntil, suffix, ctaHref, ctaLabel = 'დარეგისტრირდით' } = Astro.props;
+const { price, earlyBirdPrice, earlyBirdUntil, suffix, priceLabel, ctaHref, ctaLabel = 'დარეგისტრირდით' } = Astro.props;
 ---
 <div class="mobile-bottom-bar">
-  <PriceDisplay price={price} earlyBirdPrice={earlyBirdPrice} earlyBirdUntil={earlyBirdUntil} suffix={suffix} size="compact" />
+  <PriceDisplay price={price} earlyBirdPrice={earlyBirdPrice} earlyBirdUntil={earlyBirdUntil} suffix={suffix} label={priceLabel} size="compact" />
   <a href={ctaHref} class="btn btn-primary">{ctaLabel}</a>
 </div>
 

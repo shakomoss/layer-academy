@@ -15,7 +15,7 @@ const groupPrices = groupCourses.map(
       earlyBirdUntil: c.data.group.earlyBirdUntil,
     }).currentPrice
 );
-const mentorshipPrices = mentorshipCourses.map((c) => c.data.mentorship.monthlyPrice);
+const mentorshipPrices = mentorshipCourses.map((c) => c.data.mentorship.price);
 
 const groupRange = range(groupPrices);
 const mentorRange = range(mentorshipPrices);
@@ -35,7 +35,7 @@ const mentorRange = range(mentorshipPrices);
       <h3>ინდივიდუალური მენტორინგი</h3>
       <p>ყოველკვირეული 1:1 ონლაინ შეხვედრები, თქვენთვის მოსახერხებელ დროს. დაწყება ნებისმიერ დროს შეგიძლიათ.</p>
       <div class="foot">
-        <div class="price"><span class="label">ფასი</span><span class="val">{mentorRange} ₾ <small>/ თვეში</small></span></div>
+        <div class="price"><span class="label">ფასი</span><span class="val">{mentorRange} ₾</span></div>
         <span class="btn">პროგრამების ნახვა →</span>
       </div>
     </a>
@@ -56,7 +56,6 @@ const mentorRange = range(mentorshipPrices);
   .price { display: flex; flex-direction: column; gap: 4px; }
   .label { font-size: 14px; color: #7E7A72; }
   .val { font-family: 'Noto Sans Georgian', sans-serif; font-size: 26px; font-weight: 600; white-space: nowrap; }
-  .val small { font-size: 16px; font-weight: 400; color: #55514A; }
   .btn { background: #1C1B19; color: #F7F5F0; font-size: 16px; font-weight: 500; padding: 14px 22px; white-space: nowrap; }
   @media (max-width: 760px) {
     .grid { grid-template-columns: 1fr; }

@@ -39,7 +39,7 @@ const courses = courseFiles.map((file) => {
     },
     mentorship: {
       enabled: Boolean(data.mentorship?.enabled),
-      monthlyPrice: data.mentorship?.monthlyPrice,
+      price: data.mentorship?.price,
     },
   };
 });
