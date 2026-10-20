@@ -130,12 +130,14 @@ const faqJsonLd = buildFaqJsonLd(faqItems);
     <FAQ items={faqItems} />
   </section>
 
-  <section class="container final-cta">
-    <h2>მზად ხართ დასაწყებად?</h2>
-    <p>აირჩიეთ ჯგუფური კურსი ან ინდივიდუალური მენტორინგი და დარეგისტრირდით დღესვე.</p>
-    <div class="hero-actions">
-      <a href="/group-courses/" class="btn btn-primary">ჯგუფური კურსები</a>
-      <a href="/mentorship/" class="btn btn-secondary">ინდივიდუალური მენტორინგი</a>
+  <section class="cta-band">
+    <div class="cta-inner">
+      <h2>მზად ხართ დასაწყებად?</h2>
+      <p>აირჩიეთ ჯგუფური კურსი ან ინდივიდუალური მენტორინგი და დარეგისტრირდით დღესვე.</p>
+      <div class="cta-btns">
+        <a class="cta-primary" href="/group-courses/">ჯგუფური კურსები</a>
+        <a class="cta-secondary" href="/mentorship/">ინდივიდუალური მენტორინგი</a>
+      </div>
     </div>
   </section>
 </BaseLayout>
@@ -268,13 +270,11 @@ const faqJsonLd = buildFaqJsonLd(faqItems);
 
   .group-courses-preview,
   .lecturers,
-  .faq,
-  .final-cta {
+  .faq {
     padding-block: var(--space-5);
   }
 
-  .faq h2,
-  .final-cta h2 {
+  .faq h2 {
     margin-bottom: var(--space-3);
   }
 
@@ -413,11 +413,76 @@ const faqJsonLd = buildFaqJsonLd(faqItems);
     margin-top: 0;
   }
 
-  .final-cta {
+  .cta-band {
+    background: #1c1b19;
+    color: #f7f5f0;
+    margin-top: 96px;
+  }
+
+  .cta-inner {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 88px 40px;
     text-align: center;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: var(--space-2);
+  }
+
+  .cta-inner h2 {
+    font-size: clamp(30px, 3.6vw, 42px);
+    font-weight: 600;
+    margin: 0 0 16px;
+  }
+
+  .cta-inner p {
+    font-size: 18px;
+    line-height: 1.7;
+    color: #cfcac0;
+    margin: 0 0 36px;
+    max-width: 46ch;
+  }
+
+  .cta-btns {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .cta-primary,
+  .cta-secondary {
+    font-size: 16px;
+    font-weight: 500;
+    padding: 16px 28px;
+    text-decoration: none;
+    transition: opacity 0.2s;
+  }
+
+  .cta-primary {
+    background: #f7f5f0;
+    color: #1c1b19;
+  }
+
+  .cta-secondary {
+    border: 1px solid #f7f5f0;
+    color: #f7f5f0;
+  }
+
+  .cta-primary:hover,
+  .cta-secondary:hover {
+    opacity: 0.85;
+  }
+
+  @media (max-width: 640px) {
+    .cta-btns {
+      flex-direction: column;
+      width: 100%;
+    }
+
+    .cta-primary,
+    .cta-secondary {
+      text-align: center;
+    }
   }
 </style>
