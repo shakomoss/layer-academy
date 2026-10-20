@@ -1,84 +1,87 @@
 ---
-import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import CourseCard from '../../components/CourseCard.astro';
-import FactRows, { type FactRow } from '../../components/FactRows.astro';
-import { getInstructorForCourse } from '../../lib/instructors';
-import { buildBreadcrumbJsonLd } from '../../lib/structured-data';
+import { getCollection } from 'astro:content';
 
-const facts: FactRow[] = [
-  { icon: 'monitor', text: 'ფორმატი: 1:1 ონლაინ' },
-  { icon: 'list', text: 'პროგრამა: კურსის სილაბუსი' },
-  { icon: 'clock', text: 'განრიგი: მოქნილი' },
-  { icon: 'graduation-cap', text: 'დონე: დამწყები' },
-];
-
-const courses = (await getCollection('courses', ({ data }) => data.published && data.mentorship.enabled)).sort(
+const programs = (await getCollection('courses', ({ data }) => data.published && data.mentorship.enabled)).sort(
   (a, b) => a.data.order - b.data.order
 );
-
-const coursesWithInstructor = await Promise.all(
-  courses.map(async (course) => ({
-    course,
-    instructor: await getInstructorForCourse(course.data.slug),
-  }))
-);
-
-const breadcrumbJsonLd = buildBreadcrumbJsonLd([
-  { name: 'მთავარი', url: new URL('/', Astro.site).toString() },
-  { name: 'ინდივიდუალური მენტორინგი', url: new URL('/mentorship/', Astro.site).toString() },
-]);
+const instructors = await getCollection('instructors');
+const who = (slug: string) => instructors.find((i) => i.data.courses.includes(slug))?.data;
+const I: Record<string, string> = {
+  people: '<circle cx="8" cy="8" r="3"/><circle cx="16.5" cy="8" r="3"/><path d="M2.5 19c.6-3 2.8-5 5.5-5s4.9 2 5.5 5M11 19c.6-3 2.8-5 5.5-5s4.9 2 5.5 5"/>',
+  book: '<rect x="3" y="5" width="18" height="16" rx="1"/><path d="M3 10h18M8 3v4M16 3v4"/>',
+  clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  cap: '<path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c3 2 9 2 12 0v-5"/>',
+};
+const facts: [string, string, string][] = [
+  ['people', 'ფორმატი', '1:1 ონლაინ'],
+  ['book', 'პროგრამა', 'კურსის სილაბუსი'],
+  ['clock', 'განრიგი', 'მოქნილი'],
+  ['cap', 'დონე', 'დამწყები'],
+];
 ---
-<BaseLayout
-  title="ინდივიდუალური მენტორინგი - არქიტექტურული პროგრამები | Layer Academy"
-  description="იგივე კურსი და იგივე სილაბუსი, ინდივიდუალურად — Archicad, AutoCAD, Revit, Rhino, 3ds Max. 1:1 ონლაინ შეხვედრები ლექტორთან."
->
-  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
-  <section class="container page-intro">
+<BaseLayout title="ინდივიდუალური მენტორინგი - Layer Academy">
+  <div class="mt-wrap">
     <h1>ინდივიდუალური მენტორინგი</h1>
-    <p>
-      იგივე კურსი და იგივე სილაბუსი, ოღონდ ინდივიდუალურად: 1:1 ონლაინ შეხვედრები ლექტორთან, თქვენთვის
-      მოსახერხებელ დროს და თქვენს ტემპში. დაწყება ნებისმიერ დროს შეგიძლიათ.
-    </p>
-    <FactRows facts={facts} />
-  </section>
+    <p class="mt-lead">იგივე კურსი და იგივე სილაბუსი, ოღონდ ინდივიდუალურად: 1:1 ონლაინ შეხვედრები ლექტორთან, თქვენთვის მოსახერხებელ დროს და თქვენს ტემპში. დაწყება ნებისმიერ დროს შეგიძლიათ.</p>
 
-  <section class="container course-grid">
-    {coursesWithInstructor.map(({ course, instructor }) => (
-      <CourseCard course={course} instructorName={instructor?.data.name} />
-    ))}
-  </section>
+    <div class="mt-strip">
+      {facts.map(([icon, l, v]) => (
+        <div class="mt-c">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1C1B19" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" set:html={I[icon]} />
+          <span class="mt-l">{l}</span>
+          <span class="mt-v">{v}</span>
+        </div>
+      ))}
+    </div>
+
+    <div class="mt-grid">
+      {programs.map((p) => {
+        const i = who(p.data.slug);
+        return (
+          <a class="mt-card" href={`/mentorship/${p.data.slug}/`}>
+            <div class="mt-name">{p.data.title.toUpperCase()}</div>
+            {i && (<><div class="mt-who">{i.name}</div><div class="mt-role">{i.title}</div></>)}
+            <div class="mt-foot">
+              <div class="mt-pl">სრული კურსი</div>
+              <div class="mt-price">{p.data.mentorship.price} <span class="mt-lari">₾</span></div>
+              <span class="mt-btn">პროგრამის ნახვა →</span>
+            </div>
+          </a>
+        );
+      })}
+    </div>
+  </div>
 </BaseLayout>
 
 <style>
-  .page-intro {
-    padding-top: var(--space-5);
-    max-width: 60ch;
-  }
+  .mt-wrap { max-width: 1160px; margin: 0 auto; padding: 72px 40px; }
+  .mt-wrap h1 { font-size: clamp(32px, 4vw, 44px); font-weight: 600; margin: 0 0 14px; }
+  .mt-lead { font-size: 18px; line-height: 1.7; color: #55514A; max-width: 62ch; margin: 0 0 40px; }
 
-  .page-intro h1 {
-    margin-bottom: var(--space-2);
-  }
+  .mt-strip { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 1px solid #1C1B19; border-bottom: 1px solid #1C1B19; margin-bottom: 56px; }
+  .mt-c { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 26px 12px; text-align: center; }
+  .mt-c + .mt-c { border-left: 1px solid #CFCAC0; }
+  .mt-l { font-size: 15px; color: #7E7A72; }
+  .mt-v { font-size: 18px; font-weight: 600; white-space: nowrap; }
 
-  .page-intro :global(.fact-rows) {
-    margin-top: var(--space-3);
-  }
+  .mt-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
+  .mt-card { border: 1px solid #CFCAC0; padding: 36px 32px 32px; display: flex; flex-direction: column; color: #1C1B19; text-decoration: none; transition: border-color .2s; }
+  .mt-card:hover { border-color: #1C1B19; }
+  .mt-name { font-family: 'Jost', sans-serif; font-size: 34px; letter-spacing: 2px; line-height: 1; }
+  .mt-who { font-size: 16px; font-weight: 500; margin-top: 16px; }
+  .mt-role { font-size: 15px; color: #55514A; margin: 4px 0 28px; line-height: 1.5; }
+  .mt-foot { margin-top: auto; display: flex; flex-direction: column; padding-top: 22px; border-top: 1px solid #E2DED5; }
+  .mt-pl { font-size: 14px; color: #7E7A72; margin-bottom: 4px; }
+  .mt-price { font-size: 30px; font-weight: 600; margin-bottom: 18px; }
+  .mt-lari { font-family: 'Noto Sans Georgian', sans-serif; }
+  .mt-btn { background: #1C1B19; color: #F7F5F0; font-size: 16px; font-weight: 500; padding: 15px 18px; text-align: center; }
 
-  .course-grid {
-    padding-block: var(--space-4) var(--space-6);
-    display: grid;
-    gap: var(--space-3);
+  @media (max-width: 1024px) {
+    .mt-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .mt-strip { grid-template-columns: repeat(2, 1fr); }
+    .mt-c:nth-child(3) { border-left: none; }
+    .mt-c:nth-child(n+3) { border-top: 1px solid #CFCAC0; }
   }
-
-  @media (min-width: 640px) {
-    .course-grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-
-  @media (min-width: 1000px) {
-    .course-grid {
-      grid-template-columns: repeat(3, 1fr);
-    }
-  }
+  @media (max-width: 640px) { .mt-grid { grid-template-columns: 1fr; } }
 </style>
