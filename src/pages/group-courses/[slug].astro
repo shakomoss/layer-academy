@@ -9,7 +9,7 @@ import InstructorSection from '../../components/InstructorSection.astro';
 import FAQ from '../../components/FAQ.astro';
 import { buildFaqItems } from '../../lib/faq';
 import { getInstructorForCourse } from '../../lib/instructors';
-import { getCurrentPrice } from '../../lib/cohort';
+import { getCohortLabel, getCurrentPrice } from '../../lib/cohort';
 import ViewContentTracker from '../../components/ViewContentTracker.astro';
 import { buildBreadcrumbJsonLd, buildCourseJsonLd, buildFaqJsonLd } from '../../lib/structured-data';
 
@@ -33,7 +33,18 @@ const currentPrice = getCurrentPrice({
 
 const registerHref = `/register/?course=${slug}&type=group`;
 
+// Start date always shows (falls back to "next month" once the date passes);
+// schedule and duration only show once filled in, so a TBA course doesn't
+// advertise an empty slot.
 const facts: FactRow[] = [
+  {
+    icon: 'calendar',
+    text: getCohortLabel({ nextStartDate: group.nextStartDate }),
+    cohort: true,
+    nextStartDate: group.nextStartDate,
+  },
+  ...(group.schedule ? [{ icon: 'clock' as const, text: `განრიგი: ${group.schedule}` }] : []),
+  ...(group.duration ? [{ icon: 'list' as const, text: `ხანგრძლივობა: ${group.duration}` }] : []),
   { icon: 'monitor', text: 'ფორმატი: ონლაინ' },
   { icon: 'graduation-cap', text: 'დონე: დამწყები' },
   { icon: 'people', text: 'ჯგუფის ზომა: მცირე ჯგუფები' },

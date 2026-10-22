@@ -7,6 +7,8 @@ level: დამწყები
 group:
   enabled: true
   price: 590
+  nextStartDate: '2026-11-01'
+  duration: 8 გაკვეთილი, 8 კვირა
 mentorship:
   enabled: true
   price: 1190
