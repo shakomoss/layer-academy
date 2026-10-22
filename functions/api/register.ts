@@ -59,12 +59,19 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     const fromEmail = 'Layer Academy <onboarding@resend.dev>';
 
     if (env.RESEND_API_KEY && notificationEmail) {
-      const ownerEmail = buildOwnerEmail(data);
-      await sendEmail(env.RESEND_API_KEY, fromEmail, { to: notificationEmail, ...ownerEmail });
+      try {
+        const ownerEmail = buildOwnerEmail(data);
+        await sendEmail(env.RESEND_API_KEY, fromEmail, { to: notificationEmail, ...ownerEmail });
 
-      if (data.email) {
-        const studentEmail = buildStudentEmail(data);
-        await sendEmail(env.RESEND_API_KEY, fromEmail, { to: data.email, ...studentEmail });
+        if (data.email) {
+          const studentEmail = buildStudentEmail(data);
+          await sendEmail(env.RESEND_API_KEY, fromEmail, { to: data.email, ...studentEmail });
+        }
+      } catch (error) {
+        // A Resend outage or misconfiguration (e.g. sandbox mode rejecting the
+        // recipient) must never fail the student's registration — same reasoning
+        // as the Meta CAPI call below.
+        console.error('[register] Email send failed:', error);
       }
     } else {
       console.log('[register] RESEND_API_KEY or notificationEmail not set — logging instead of sending:', data);
