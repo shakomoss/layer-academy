@@ -24,10 +24,13 @@ function readCookie(name: string): string {
 
 /** First-touch UTM attribution: captured once per browser session, then reused. */
 export function captureUtm(): UtmParams {
+  const hasAny = (u: UtmParams) => Object.values(u).some(Boolean);
+
   const existing = sessionStorage.getItem(UTM_STORAGE_KEY);
   if (existing) {
     try {
-      return JSON.parse(existing) as UtmParams;
+      const parsed = JSON.parse(existing) as UtmParams;
+      if (hasAny(parsed)) return parsed;
     } catch {
       // fall through and re-capture below
     }
@@ -42,7 +45,9 @@ export function captureUtm(): UtmParams {
     content: params.get('utm_content') || '',
   };
 
-  sessionStorage.setItem(UTM_STORAGE_KEY, JSON.stringify(utm));
+  // Only remember a visit that actually carried tags, so a first untagged
+  // page can't lock in "no attribution" for the rest of the session.
+  if (hasAny(utm)) sessionStorage.setItem(UTM_STORAGE_KEY, JSON.stringify(utm));
   return utm;
 }
 

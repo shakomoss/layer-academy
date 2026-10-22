@@ -41,7 +41,11 @@ const { pixelId, ga4Id, clarityId, messengerPageId } = Astro.props;
 
 <script>
   import { loadClarity, loadGa4, loadMessengerChat, loadPixel } from '../lib/pixel';
-  import { getConsentChoice, setConsentChoice, trackContact, trackPageView } from '../lib/tracking';
+  import { captureUtm, getConsentChoice, setConsentChoice, trackContact, trackPageView } from '../lib/tracking';
+
+  // Ad tags only exist in the landing page's address; save them on every page
+  // load so they're still there when the visitor reaches the registration form.
+  captureUtm();
 
   const banner = document.getElementById('consent-banner') as HTMLElement;
   const acceptButton = document.getElementById('consent-accept') as HTMLButtonElement;
