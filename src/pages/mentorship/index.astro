@@ -1,6 +1,12 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
+import { buildBreadcrumbJsonLd } from '../../lib/structured-data';
+
+const breadcrumbJsonLd = buildBreadcrumbJsonLd([
+  { name: 'მთავარი', url: new URL('/', Astro.site).toString() },
+  { name: 'ინდივიდუალური მენტორინგი', url: new URL('/mentorship/', Astro.site).toString() },
+]);
 
 const programs = (await getCollection('courses', ({ data }) => data.published && data.mentorship.enabled)).sort(
   (a, b) => a.data.order - b.data.order
@@ -20,7 +26,11 @@ const facts: [string, string, string][] = [
   ['cap', 'დონე', 'დამწყები'],
 ];
 ---
-<BaseLayout title="ინდივიდუალური მენტორინგი - Layer Academy">
+<BaseLayout
+  title="ინდივიდუალური მენტორინგი - არქიტექტურული პროგრამები | Layer Academy"
+  description="იგივე კურსი და იგივე სილაბუსი, ინდივიდუალურად: Archicad, AutoCAD, Revit, Rhino, 3ds Max. 1:1 ონლაინ შეხვედრები ლექტორთან, თქვენთვის მოსახერხებელ დროს."
+>
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
   <div class="mt-wrap">
     <h1>ინდივიდუალური მენტორინგი</h1>
     <p class="mt-lead">იგივე კურსი და იგივე სილაბუსი, ოღონდ ინდივიდუალურად: 1:1 ონლაინ შეხვედრები ლექტორთან, თქვენთვის მოსახერხებელ დროს და თქვენს ტემპში. დაწყება ნებისმიერ დროს შეგიძლიათ.</p>
