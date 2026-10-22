@@ -178,7 +178,7 @@ The original plan was a simple third-party form-to-email service (Web3Forms or F
 
 So the registration form posts to a small Cloudflare Pages Function (`/api/register`, part of this repo, still $0 to run) instead, which does that validation and then sends email itself via **[Resend](https://resend.com)**, a transactional email API — the free tier covers 3,000 emails/month and 100/day (check [resend.com/pricing](https://resend.com/pricing) for current numbers), which is far more than a course-registration volume needs. This also meant Web3Forms/Formspree's own spam protection wasn't available, so the form has its own honeypot field plus Cloudflare Turnstile instead.
 
-Emails send from `onboarding@resend.dev` by default (Resend's shared testing domain, works with zero setup). To send from your own address instead, verify a domain in Resend and update the `fromEmail` constant in `functions/api/register.ts`.
+Emails send from `registration@layeracademy.ge` (verified in Resend) — if you ever need to change the sender address, update the `fromEmail` constant in `functions/api/register.ts`.
 
 ---
 

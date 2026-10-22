@@ -56,7 +56,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 
     const data = result.data;
     const { notificationEmail } = settings as SettingsManifest;
-    const fromEmail = 'Layer Academy <onboarding@resend.dev>';
+    const fromEmail = 'Layer Academy <registration@layeracademy.ge>';
 
     if (env.RESEND_API_KEY && notificationEmail) {
       try {
