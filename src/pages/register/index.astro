@@ -91,7 +91,16 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY || '';
       <div class="field consent-field">
         <label class="checkbox-option">
           <input type="checkbox" id="consent" name="consent" required />
-          <span>ვეთანხმები <a href="/privacy/" target="_blank" rel="noopener">კონფიდენციალურობის პოლიტიკას</a></span>
+          <span>
+            ვეთანხმები <a href="/terms/" target="_blank" rel="noopener">წესებსა და პირობებს</a>{' '}და{' '}<a href="/privacy/" target="_blank" rel="noopener">კონფიდენციალურობის პოლიტიკას</a>
+          </span>
+        </label>
+        <label class="checkbox-option">
+          <input type="checkbox" id="earlyStartConsent" name="earlyStartConsent" required />
+          <span>
+            ვთანხმდები, რომ სწავლა შეიძლება დაიწყოს 14-დღიანი გაუქმების ვადის ამოწურვამდე. ამ შემთხვევაში,
+            გაუქმებისას ვიხდი უკვე ჩატარებული ნაწილის ღირებულებას.
+          </span>
         </label>
       </div>
 
@@ -259,6 +268,7 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY || '';
       preferredContact: formData.get('preferredContact'),
       comment: formData.get('comment'),
       consent: formData.get('consent') === 'on',
+      earlyStartConsent: formData.get('earlyStartConsent') === 'on',
       website: formData.get('website'),
       eventId,
       pageUrl: window.location.href,
@@ -371,6 +381,17 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY || '';
     gap: 0.5rem;
     font-size: 0.95rem;
     min-height: 44px;
+  }
+
+  .consent-field .checkbox-option {
+    align-items: flex-start;
+    line-height: 1.5;
+    padding-block: 0.5rem;
+  }
+
+  .consent-field .checkbox-option input {
+    margin-top: 0.3rem;
+    flex-shrink: 0;
   }
 
   .radio-option input:disabled {

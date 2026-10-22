@@ -36,6 +36,10 @@ export function buildOwnerEmail(data: ValidatedRegistration): { subject: string;
     ['UTM წყარო', data.utm.source || '—'],
     ['UTM მედიუმი', data.utm.medium || '—'],
     ['UTM კამპანია', data.utm.campaign || '—'],
+    // Registration is rejected unless both boxes are ticked, so these are
+    // always "yes" — kept in the email because it's the only record we have.
+    ['თანხმობა წესებსა და კონფიდენციალურობაზე', 'დიახ'],
+    ['თანხმობა 14-დღიან ვადამდე დაწყებაზე', 'დიახ'],
   ];
 
   const html = `

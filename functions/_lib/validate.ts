@@ -13,6 +13,7 @@ export interface RegistrationInput {
   preferredContact?: unknown;
   comment?: unknown;
   consent?: unknown;
+  earlyStartConsent?: unknown;
   website?: unknown; // honeypot
   eventId?: unknown;
   pageUrl?: unknown;
@@ -113,6 +114,13 @@ export function validateRegistration(
 
   if (input.consent !== true) {
     return { ok: false, error: { field: 'consent', message: 'გთხოვთ, დაადასტუროთ წესებთან თანხმობა.' } };
+  }
+
+  if (input.earlyStartConsent !== true) {
+    return {
+      ok: false,
+      error: { field: 'earlyStartConsent', message: 'გთხოვთ, დაადასტუროთ თანხმობა სწავლის დაწყების პირობაზე.' },
+    };
   }
 
   const comment = asString(input.comment).slice(0, 1000);
