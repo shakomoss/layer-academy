@@ -89,9 +89,16 @@ const facts: [string, string, string][] = [
 
   @media (max-width: 1024px) {
     .mt-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .mt-strip { grid-template-columns: repeat(2, 1fr); }
+    .mt-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .mt-c:nth-child(3) { border-left: none; }
     .mt-c:nth-child(n+3) { border-top: 1px solid #CFCAC0; }
   }
   @media (max-width: 640px) { .mt-grid { grid-template-columns: 1fr; } }
+  @media (max-width: 480px) {
+    .mt-wrap { padding: 48px 20px; }
+    .mt-wrap h1 { font-size: 27px; overflow-wrap: break-word; }
+    .mt-card { padding: 28px 20px 24px; }
+    .mt-name { font-size: 30px; }
+    .mt-v { white-space: normal; }
+  }
 </style>

@@ -155,7 +155,24 @@ const faqJsonLd = buildFaqJsonLd(faqItems);
     font-size: clamp(40px, 5vw, 68px);
     font-weight: 500;
     line-height: 1.2;
-    max-width: 960px;
+    max-width: min(960px, 100%);
+    overflow-wrap: break-word;
+  }
+
+  @media (max-width: 520px) {
+    .hero {
+      padding-block: 56px 48px;
+    }
+
+    .hero h1 {
+      font-size: 30px;
+    }
+
+    .hero-software {
+      font-size: 14px;
+      letter-spacing: 2px;
+      line-height: 1.8;
+    }
   }
 
   .hero h1 br {
