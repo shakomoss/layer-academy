@@ -21,6 +21,7 @@ interface Props {
   ctaHref: string;
   ctaLabel?: string;
   instructor?: SidebarInstructor;
+  paused?: boolean;
 }
 
 const {
@@ -34,17 +35,24 @@ const {
   ctaHref,
   ctaLabel = 'დარეგისტრირდით',
   instructor,
+  paused = false,
 } = Astro.props;
 ---
 <aside class="course-sidebar">
-  <PriceDisplay price={price} earlyBirdPrice={earlyBirdPrice} earlyBirdUntil={earlyBirdUntil} suffix={suffix} label={priceLabel} size="large" />
-  {seatsLeft != null && <p class="sidebar-seats">დარჩენილია {seatsLeft} ადგილი</p>}
+  {paused ? (
+    <p class="sidebar-paused">მიღება დროებით შეწყვეტილია</p>
+  ) : (
+    <>
+      <PriceDisplay price={price} earlyBirdPrice={earlyBirdPrice} earlyBirdUntil={earlyBirdUntil} suffix={suffix} label={priceLabel} size="large" />
+      {seatsLeft != null && <p class="sidebar-seats">დარჩენილია {seatsLeft} ადგილი</p>}
+    </>
+  )}
 
   <hr class="sidebar-rule" />
 
   <FactRows facts={facts} />
 
-  <a href={ctaHref} class="btn btn-primary sidebar-cta">{ctaLabel}</a>
+  {!paused && <a href={ctaHref} class="btn btn-primary sidebar-cta">{ctaLabel}</a>}
 
   {instructor && (
     <>
@@ -72,6 +80,13 @@ const {
       border: 1px solid #cfcac0;
       padding: 32px;
     }
+  }
+
+  .sidebar-paused {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 1.4;
   }
 
   .sidebar-seats {

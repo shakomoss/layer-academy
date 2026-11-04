@@ -2,6 +2,7 @@
 title: Rhino
 slug: rhino
 published: true
+admissionsPaused: true
 order: 4
 level: დამწყები
 group:

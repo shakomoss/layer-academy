@@ -2,6 +2,7 @@ export interface CourseManifestEntry {
   slug: string;
   title: string;
   published: boolean;
+  admissionsPaused: boolean;
   group: {
     enabled: boolean;
     price: number;

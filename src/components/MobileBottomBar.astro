@@ -9,18 +9,32 @@ interface Props {
   priceLabel?: string;
   ctaHref: string;
   ctaLabel?: string;
+  paused?: boolean;
 }
 
-const { price, earlyBirdPrice, earlyBirdUntil, suffix, priceLabel, ctaHref, ctaLabel = 'დარეგისტრირდით' } = Astro.props;
+const { price, earlyBirdPrice, earlyBirdUntil, suffix, priceLabel, ctaHref, ctaLabel = 'დარეგისტრირდით', paused = false } = Astro.props;
 ---
 <div class="mobile-bottom-bar">
-  <PriceDisplay price={price} earlyBirdPrice={earlyBirdPrice} earlyBirdUntil={earlyBirdUntil} suffix={suffix} label={priceLabel} size="compact" />
-  <a href={ctaHref} class="btn btn-primary">{ctaLabel}</a>
+  {paused ? (
+    <p class="bar-paused">მიღება დროებით შეწყვეტილია</p>
+  ) : (
+    <>
+      <PriceDisplay price={price} earlyBirdPrice={earlyBirdPrice} earlyBirdUntil={earlyBirdUntil} suffix={suffix} label={priceLabel} size="compact" />
+      <a href={ctaHref} class="btn btn-primary">{ctaLabel}</a>
+    </>
+  )}
 </div>
 
 <style>
   .mobile-bottom-bar {
     display: none;
+  }
+
+  .bar-paused {
+    margin: 0;
+    width: 100%;
+    text-align: center;
+    font-weight: 600;
   }
 
   @media (max-width: 1023px) {

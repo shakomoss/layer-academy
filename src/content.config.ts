@@ -7,6 +7,9 @@ const courses = defineCollection({
     title: z.string(),
     slug: z.string(),
     published: z.boolean().default(true),
+    // Page stays up (links and SEO keep working) but registration is closed
+    // for both formats and the page shows "admissions paused" instead.
+    admissionsPaused: z.boolean().default(false),
     order: z.number().default(0),
     level: z.string().default('დამწყები'),
     group: z.object({

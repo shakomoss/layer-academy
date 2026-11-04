@@ -18,7 +18,7 @@ export async function getStaticPaths() {
 }
 
 const { course } = Astro.props;
-const { title, slug, mentorship, group, syllabus, seoTitle, seoDescription } = course.data;
+const { title, slug, mentorship, group, syllabus, seoTitle, seoDescription, admissionsPaused } = course.data;
 const instructor = await getInstructorForCourse(slug);
 
 const pageTitle = seoTitle || `${title} - ინდივიდუალური მენტორინგი | Layer Academy`;
@@ -42,6 +42,7 @@ const courseJsonLd = buildCourseJsonLd({
   url: pageUrl,
   image: new URL(`/og/${slug}-mentorship.png`, Astro.site).toString(),
   price: mentorship.price,
+  admissionsPaused,
   instructorName: instructor?.data.name,
   instructorTitle: instructor?.data.title,
   instructorOneLiner: instructor?.data.oneLiner,
@@ -109,6 +110,7 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd([
       priceLabel="სრული კურსი"
       facts={facts}
       ctaHref={registerHref}
+      paused={admissionsPaused}
       instructor={
         instructor
           ? {
@@ -122,7 +124,7 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd([
     />
   </div>
 
-  <MobileBottomBar price={mentorship.price} priceLabel="სრული კურსი" ctaHref={registerHref} />
+  <MobileBottomBar price={mentorship.price} priceLabel="სრული კურსი" ctaHref={registerHref} paused={admissionsPaused} />
 </BaseLayout>
 
 <style>

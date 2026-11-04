@@ -19,7 +19,7 @@ export async function getStaticPaths() {
 }
 
 const { course } = Astro.props;
-const { title, slug, group, goal, outcome, syllabus, mentorship, seoTitle, seoDescription } = course.data;
+const { title, slug, group, goal, outcome, syllabus, mentorship, seoTitle, seoDescription, admissionsPaused } = course.data;
 const instructor = await getInstructorForCourse(slug);
 
 const pageTitle = seoTitle || `${title} კურსი ონლაინ - საბაზისო დონე | Layer Academy`;
@@ -36,7 +36,7 @@ const registerHref = `/register/?course=${slug}&type=group`;
 // Start date always shows (falls back to "next month" once the date passes);
 // schedule and duration only show once filled in, so a TBA course doesn't
 // advertise an empty slot.
-const facts: FactRow[] = [
+const scheduleFacts: FactRow[] = [
   {
     icon: 'calendar',
     text: getCohortLabel({ nextStartDate: group.nextStartDate }),
@@ -45,6 +45,11 @@ const facts: FactRow[] = [
   },
   ...(group.schedule ? [{ icon: 'clock' as const, text: `განრიგი: ${group.schedule}` }] : []),
   ...(group.duration ? [{ icon: 'list' as const, text: `ხანგრძლივობა: ${group.duration}` }] : []),
+];
+
+// A paused course doesn't advertise a start date or schedule it can't honour.
+const facts: FactRow[] = [
+  ...(admissionsPaused ? [] : scheduleFacts),
   { icon: 'monitor', text: 'ფორმატი: ონლაინ' },
   { icon: 'graduation-cap', text: 'დონე: დამწყები' },
   { icon: 'people', text: 'ჯგუფის ზომა: მცირე ჯგუფები' },
@@ -60,7 +65,8 @@ const courseJsonLd = buildCourseJsonLd({
   url: pageUrl,
   image: new URL(`/og/${slug}-group.png`, Astro.site).toString(),
   price: currentPrice,
-  schedule: group.schedule,
+  admissionsPaused,
+  schedule: admissionsPaused ? undefined : group.schedule,
   instructorName: instructor?.data.name,
   instructorTitle: instructor?.data.title,
   instructorOneLiner: instructor?.data.oneLiner,
@@ -141,6 +147,7 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd([
       seatsLeft={group.seatsLeft}
       facts={facts}
       ctaHref={registerHref}
+      paused={admissionsPaused}
       instructor={
         instructor
           ? { name: instructor.data.name, title: instructor.data.title, oneLiner: instructor.data.oneLiner }
@@ -154,6 +161,7 @@ const breadcrumbJsonLd = buildBreadcrumbJsonLd([
     earlyBirdPrice={group.earlyBirdPrice}
     earlyBirdUntil={group.earlyBirdUntil}
     ctaHref={registerHref}
+    paused={admissionsPaused}
   />
 </BaseLayout>
 

@@ -6,7 +6,7 @@ order: 1
 level: დამწყები
 group:
   enabled: true
-  price: 310
+  price: 550
   schedule: შაბათ-კვირა, 12:00
   duration: 8 გაკვეთილი, თითოეული 60–80 წუთი
 mentorship:

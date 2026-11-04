@@ -95,6 +95,9 @@ export function validateRegistration(
   if (!course) {
     return { ok: false, error: { field: 'course', message: 'გთხოვთ, აირჩიოთ პროგრამა.' } };
   }
+  if (course.admissionsPaused) {
+    return { ok: false, error: { field: 'course', message: 'ამ პროგრამაზე მიღება დროებით შეწყვეტილია.' } };
+  }
 
   const type = asString(input.type) as RegistrationType;
   if (type !== 'group' && type !== 'mentorship') {

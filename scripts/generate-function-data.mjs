@@ -31,6 +31,7 @@ const courses = courseFiles.map((file) => {
     slug: data.slug,
     title: data.title,
     published: data.published !== false,
+    admissionsPaused: data.admissionsPaused === true,
     group: {
       enabled: Boolean(data.group?.enabled),
       price: data.group?.price,

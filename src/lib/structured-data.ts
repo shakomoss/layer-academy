@@ -13,6 +13,7 @@ export interface CourseJsonLdInput {
   url: string;
   image: string;
   price: number;
+  admissionsPaused?: boolean;
   schedule?: string;
   instructorName?: string;
   instructorTitle?: string;
@@ -51,7 +52,7 @@ export function buildCourseJsonLd(input: CourseJsonLdInput) {
       price: input.price,
       priceCurrency: 'GEL',
       url: input.url,
-      availability: 'https://schema.org/InStock',
+      availability: input.admissionsPaused ? 'https://schema.org/OutOfStock' : 'https://schema.org/InStock',
     },
   };
 }

@@ -2,10 +2,15 @@
 import { getCollection } from 'astro:content';
 import { getCurrentPrice } from '../lib/cohort';
 
-const groupCourses = await getCollection('courses', ({ data }) => data.published && data.group.enabled);
-const mentorshipCourses = await getCollection('courses', ({ data }) => data.published && data.mentorship.enabled);
+// Price ranges only cover courses that are open for registration.
+const groupCourses = await getCollection('courses', ({ data }) => data.published && !data.admissionsPaused && data.group.enabled);
+const mentorshipCourses = await getCollection('courses', ({ data }) => data.published && !data.admissionsPaused && data.mentorship.enabled);
 
-const range = (prices: number[]) => `${Math.min(...prices)}–${Math.max(...prices)}`;
+const range = (prices: number[]) => {
+  const lo = Math.min(...prices);
+  const hi = Math.max(...prices);
+  return lo === hi ? `${lo}` : `${lo}–${hi}`;
+};
 
 const groupPrices = groupCourses.map(
   (c) =>

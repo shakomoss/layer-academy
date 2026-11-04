@@ -2,6 +2,7 @@
 title: 3ds Max
 slug: 3ds-max
 published: true
+admissionsPaused: true
 order: 5
 level: დამწყები
 group:

@@ -2,6 +2,7 @@
 title: Revit
 slug: revit
 published: true
+admissionsPaused: true
 order: 3
 level: დამწყები
 group:

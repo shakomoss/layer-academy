@@ -28,6 +28,12 @@ content:
         type: boolean
         default: true
 
+      - name: admissionsPaused
+        label: "მიღება დროებით შეწყვეტილია"
+        description: "ჩართვის შემთხვევაში გვერდი დარჩება საიტზე, მაგრამ რეგისტრაცია (ჯგუფურსა და ინდივიდუალურზე) დაიხურება და გამოჩნდება წარწერა „მიღება დროებით შეწყვეტილია“."
+        type: boolean
+        default: false
+
       - name: order
         label: "რიგითობა"
         description: "რიგითობა სიებში (0 — პირველი)."

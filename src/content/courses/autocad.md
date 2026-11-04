@@ -2,6 +2,7 @@
 title: AutoCAD
 slug: autocad
 published: true
+admissionsPaused: true
 order: 2
 level: დამწყები
 group:
